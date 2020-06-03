@@ -12,7 +12,7 @@ type ServiceInformation struct {
 func (l LBD) RetrieveServiceInformation(serviceId string) (*ServiceInformation, error) {
 	r := NewGetRequest("/v1/services/" + serviceId)
 
-	data, err := l.Do(r, true)
+	data, err := l.Do(r, nil, true)
 	if err != nil {
 		return nil, err
 	}

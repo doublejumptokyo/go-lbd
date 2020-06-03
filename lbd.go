@@ -1,6 +1,7 @@
 package lbd
 
 import (
+	"bytes"
 	"context"
 	"crypto/hmac"
 	"crypto/sha512"
@@ -108,15 +109,16 @@ func (l LBD) Sign(r Requester) string {
 	return base64.StdEncoding.EncodeToString(sig)
 }
 
-func (l LBD) Do(r Requester, sign bool) (*Response, error) {
+func (l LBD) Do(r Requester, body []byte, sign bool) (*Response, error) {
 	ctx := context.TODO()
 	url := l.baseURL + r.Path()
 
 	fmt.Println(url)
 
 	client := new(http.Client)
-	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+	req, err := http.NewRequestWithContext(ctx, r.Method(), url, bytes.NewReader(body))
 	req.Header.Add("service-api-key", l.apiKey)
+	req.Header.Add("Content-Type", "application/json")
 
 	if sign {
 		sig := l.Sign(r)
@@ -133,13 +135,13 @@ func (l LBD) Do(r Requester, sign bool) (*Response, error) {
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	buf, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
 
 	ret := new(Response)
-	err = json.Unmarshal(body, ret)
+	err = json.Unmarshal(buf, ret)
 	if err != nil {
 		return nil, err
 	}
