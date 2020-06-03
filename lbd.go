@@ -49,34 +49,6 @@ func (l LBD) Sign(nonce string, timestampMsec int64, method, path, query string)
 	return sign(l.apiSecret, nonce, timestampMsec, method, path, query)
 }
 
-type ServiceInformation struct {
-	ServiceID   string `json:"serviceId"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Category    string `json:"category"`
-}
-
-func (l LBD) RetrieveServiceInformation(serviceId string) (*ServiceInformation, error) {
-	path := "/v1/services/" + serviceId
-
-	data, err := l.get(path, "", true)
-	if err != nil {
-		return nil, err
-	}
-
-	ret := new(ServiceInformation)
-	return ret, json.Unmarshal(data.ResponseData, ret)
-}
-
-func (l LBD) RetrieveServerTime() (int64, error) {
-	path := "/v1/time"
-	ret, err := l.get(path, "", false)
-	if err != nil {
-		return 0, err
-	}
-	return ret.ResponseTime, nil
-}
-
 func (l LBD) get(path, query string, sign bool) (*Response, error) {
 	url := l.baseURL + path
 

@@ -1,7 +1,6 @@
 package lbd
 
 import (
-	"fmt"
 	"os"
 	"testing"
 
@@ -12,21 +11,6 @@ var (
 	l         = &LBD{}
 	serviceID = os.Getenv("SERVICE_ID")
 )
-
-func TestRetrieveServiceInformation(t *testing.T) {
-	is := initializeTest(t)
-	ret, err := l.RetrieveServiceInformation(serviceID)
-	is.Nil(err)
-
-	fmt.Println(ret)
-}
-
-func TestRetrieveServerTime(t *testing.T) {
-	is := initializeTest(t)
-	tm, err := l.RetrieveServerTime()
-	is.Nil(err)
-	fmt.Println("Server time:", tm)
-}
 
 func TestSign(t *testing.T) {
 	is := initializeTest(t)
