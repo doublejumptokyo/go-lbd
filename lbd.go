@@ -34,14 +34,11 @@ func NewLBD(apiKey string) (*LBD, error) {
 
 func (l LBD) RetrieveServerTime() (int64, error) {
 	path := "/v1/time"
-
 	ret, err := l.get(path)
 	if err != nil {
 		return 0, err
 	}
-
-	fmt.Println(ret)
-	return 0, nil
+	return ret.ResponseTime, nil
 }
 
 func (l LBD) get(path string) (*Response, error) {
