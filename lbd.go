@@ -1,6 +1,7 @@
 package lbd
 
 import (
+	"context"
 	"crypto/hmac"
 	"crypto/sha512"
 	"encoding/base64"
@@ -29,6 +30,59 @@ type LBD struct {
 	apiSecret string
 }
 
+type Requester interface {
+	Method() string
+	Path() string
+	Nonce() string
+	Timestamp() string
+	Encode() string
+}
+
+type Request struct {
+	nonce     string
+	timestamp int64
+	method    string
+	path      string
+}
+
+func NewGetRequest(path string) *Request {
+	now := NowMsec()
+	return &Request{
+		nonce:     GenerateNonce(now),
+		timestamp: now,
+		method:    "GET",
+		path:      path,
+	}
+}
+
+func (r *Request) Method() string {
+	return r.method
+}
+
+func (r *Request) Path() string {
+	return r.path
+}
+
+func (r *Request) Nonce() string {
+	return r.nonce
+}
+
+func (r *Request) Timestamp() string {
+	return fmt.Sprint(r.timestamp)
+}
+
+func (r *Request) Encode() string {
+	return fmt.Sprintf("%s%s%s%s", r.Nonce(), r.Timestamp(), r.method, r.path)
+}
+
+// type Method string
+
+// const (
+// 	MethodGet  Method = "GET"
+// 	MethodPost        = "POST"
+// 	MethodPut         = "PUT"
+// )
+
 type Response struct {
 	ResponseTime  int64           `json:"responseTime"`
 	StatusCode    int64           `json:"statusCode"`
@@ -45,27 +99,31 @@ func NewLBD(apiKey string, secret string) (*LBD, error) {
 	return l, nil
 }
 
-func (l LBD) Sign(nonce string, timestampMsec int64, method, path, query string) string {
-	return sign(l.apiSecret, nonce, timestampMsec, method, path, query)
+func (l LBD) Sign(r Requester) string {
+	msg := r.Encode()
+	mac := hmac.New(sha512.New, []byte(l.apiSecret))
+	mac.Write([]byte(msg))
+	sig := mac.Sum(nil)
+
+	return base64.StdEncoding.EncodeToString(sig)
 }
 
-func (l LBD) get(path, query string, sign bool) (*Response, error) {
-	url := l.baseURL + path
+func (l LBD) Do(r Requester, sign bool) (*Response, error) {
+	ctx := context.TODO()
+	url := l.baseURL + r.Path()
 
 	fmt.Println(url)
 
 	client := new(http.Client)
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	req.Header.Add("service-api-key", l.apiKey)
 
 	if sign {
-		timeMsec := NowMsec()
-		nonce := GenerateNonce(timeMsec)
-		sig := l.Sign(nonce, timeMsec, "GET", path, query)
+		sig := l.Sign(r)
 
-		fmt.Println(nonce, fmt.Sprint(timeMsec), sig)
-		req.Header.Add("nonce", nonce)
-		req.Header.Add("timestamp", fmt.Sprint(timeMsec))
+		fmt.Println(r.Nonce(), r.Timestamp(), sig)
+		req.Header.Add("nonce", r.Nonce())
+		req.Header.Add("timestamp", r.Timestamp())
 		req.Header.Add("signature", sig)
 	}
 
@@ -101,21 +159,6 @@ func GenerateNonce(timestampMsec int64) string {
 	// TODO The same nonce can’t be reused per service-api-key within 20 seconds.
 	// An error is returned when the nonce of the successful request is reused within 20 seconds.
 	return randString(8)
-}
-
-func sign(secret, nonce string, timestampMsec int64, method, path string, query string) string {
-	var msg string
-	if query == "" {
-		msg = fmt.Sprintf("%s%d%s%s", nonce, timestampMsec, method, path)
-	} else {
-		msg = fmt.Sprintf("%s%d%s%s?%s", nonce, timestampMsec, method, path, query)
-	}
-
-	mac := hmac.New(sha512.New, []byte(secret))
-	mac.Write([]byte(msg))
-	sig := mac.Sum(nil)
-
-	return base64.StdEncoding.EncodeToString(sig)
 }
 
 func randString(l int) string {

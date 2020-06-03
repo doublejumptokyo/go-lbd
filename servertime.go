@@ -1,8 +1,8 @@
 package lbd
 
 func (l LBD) RetrieveServerTime() (int64, error) {
-	path := "/v1/time"
-	ret, err := l.get(path, "", false)
+	r := NewGetRequest("/v1/time")
+	ret, err := l.Do(r, false)
 	if err != nil {
 		return 0, err
 	}

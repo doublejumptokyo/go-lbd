@@ -10,9 +10,9 @@ type ServiceInformation struct {
 }
 
 func (l LBD) RetrieveServiceInformation(serviceId string) (*ServiceInformation, error) {
-	path := "/v1/services/" + serviceId
+	r := NewGetRequest("/v1/services/" + serviceId)
 
-	data, err := l.get(path, "", true)
+	data, err := l.Do(r, true)
 	if err != nil {
 		return nil, err
 	}
