@@ -30,10 +30,10 @@ type LBD struct {
 }
 
 type Response struct {
-	ResponseTime  int64       `json:"responseTime"`
-	StatusCode    int64       `json:"statusCode"`
-	StatusMessage string      `json:"statusMessage"`
-	ResponseData  interface{} `json:"responseData"`
+	ResponseTime  int64           `json:"responseTime"`
+	StatusCode    int64           `json:"statusCode"`
+	StatusMessage string          `json:"statusMessage"`
+	ResponseData  json.RawMessage `json:"responseData"`
 }
 
 func NewLBD(apiKey string, secret string) (*LBD, error) {
@@ -49,16 +49,23 @@ func (l LBD) Sign(nonce string, timestampMsec int64, method, path, query string)
 	return sign(l.apiSecret, nonce, timestampMsec, method, path, query)
 }
 
-func (l LBD) RetrieveServiceInformation(serviceId string) (string, error) {
+type ServiceInformation struct {
+	ServiceID   string `json:"serviceId"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Category    string `json:"category"`
+}
+
+func (l LBD) RetrieveServiceInformation(serviceId string) (*ServiceInformation, error) {
 	path := "/v1/services/" + serviceId
 
-	ret, err := l.get(path, "", true)
+	data, err := l.get(path, "", true)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	fmt.Println(ret)
-	return "ok", nil
+	ret := new(ServiceInformation)
+	return ret, json.Unmarshal(data.ResponseData, ret)
 }
 
 func (l LBD) RetrieveServerTime() (int64, error) {
