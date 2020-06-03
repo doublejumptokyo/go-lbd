@@ -14,9 +14,9 @@ var (
 
 func TestRetrieveServerTime(t *testing.T) {
 	is := initializeTest(t)
-	t, err := l.RetrieveServerTime()
+	tm, err := l.RetrieveServerTime()
 	is.Nil(err)
-	fmt.Println("Server time:", t)
+	fmt.Println("Server time:", tm)
 }
 
 func initializeTest(t *testing.T) is.I {
