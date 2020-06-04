@@ -1,5 +1,12 @@
 package lbd
 
-import "testing"
+import (
+	"testing"
+)
 
-func TestListAllNonFungibles(t *testing.T) {}
+func TestCreateNonFungible(t *testing.T) {
+	is := initializeTest(t)
+	ret, err := l.CreateNonFungible(serviceID, "NobunagaOda", "Tenkafubu", owner)
+	is.Nil(err)
+	t.Log(ret)
+}

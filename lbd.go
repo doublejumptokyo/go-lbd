@@ -47,11 +47,19 @@ type Request struct {
 }
 
 func NewGetRequest(path string) *Request {
+	return NewRequest("GET", path)
+}
+
+func NewPostRequest(path string) *Request {
+	return NewRequest("POST", path)
+}
+
+func NewRequest(method, path string) *Request {
 	now := NowMsec()
 	return &Request{
 		nonce:     GenerateNonce(now),
 		timestamp: now,
-		method:    "GET",
+		method:    method,
 		path:      path,
 	}
 }
@@ -115,19 +123,33 @@ func (l LBD) Do(r Requester, body []byte, sign bool) (*Response, error) {
 
 	fmt.Println(url)
 
+	body, err := json.Marshal(r)
+	if err != nil {
+		return nil, err
+	}
+	if string(body) == "{}" {
+		body = nil
+	}
+
 	client := new(http.Client)
 	req, err := http.NewRequestWithContext(ctx, r.Method(), url, bytes.NewReader(body))
+	if err != nil {
+		return nil, err
+	}
 	req.Header.Add("service-api-key", l.apiKey)
 	req.Header.Add("Content-Type", "application/json")
 
+	fmt.Println(string(body))
+	fmt.Println(r.Encode())
+
 	if sign {
 		sig := l.Sign(r)
-
-		fmt.Println(r.Nonce(), r.Timestamp(), sig)
 		req.Header.Add("nonce", r.Nonce())
 		req.Header.Add("timestamp", r.Timestamp())
 		req.Header.Add("signature", sig)
 	}
+
+	fmt.Println(req.Header)
 
 	resp, err := client.Do(req)
 	if err != nil {
