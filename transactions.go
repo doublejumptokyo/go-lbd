@@ -4,17 +4,16 @@ import (
 	"encoding/json"
 )
 
-func UnmarshalTransactionInformation(data []byte) (TransactionInformation, error) {
-	var r TransactionInformation
-	err := json.Unmarshal(data, &r)
-	return r, err
+func UnmarshalTransaction(data []byte) (*Transaction, error) {
+	r := new(Transaction)
+	return r, json.Unmarshal(data, r)
 }
 
-func (r *TransactionInformation) Marshal() ([]byte, error) {
+func (r *Transaction) Marshal() ([]byte, error) {
 	return json.Marshal(r)
 }
 
-type TransactionInformation struct {
+type Transaction struct {
 	Height    int64  `json:"height"`
 	Txhash    string `json:"txhash"`
 	Index     int64  `json:"index"`
@@ -82,12 +81,11 @@ type PubKey struct {
 	Value string `json:"value"`
 }
 
-func (l LBD) RetrieveTransactionInformation(txHash string) (*TransactionInformation, error) {
+func (l LBD) RetrieveTransactionInformation(txHash string) (*Transaction, error) {
 	r := NewGetRequest("/v1/transactions/" + txHash)
 	resp, err := l.Do(r, true)
 	if err != nil {
 		return nil, err
 	}
-	ret := new(TransactionInformation)
-	return ret, json.Unmarshal(resp.ResponseData, ret)
+	return UnmarshalTransaction(resp.ResponseData)
 }

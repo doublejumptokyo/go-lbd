@@ -60,7 +60,7 @@ func (r MintServiceTokenRequest) Encode() string {
 	return fmt.Sprintf("%s?amount=%s&ownerAddress=%s&ownerSecret=%s&toAddress=%s", base, r.Amount, r.OwnerAddress, r.OwnerSecret, r.ToAddress)
 }
 
-func (l *LBD) MintServiceToken(contractId string, to string, amount *big.Int, owner *Account) (string, error) {
+func (l *LBD) MintServiceToken(contractId string, to string, amount *big.Int, owner *Account) (*Transaction, error) {
 	path := fmt.Sprintf("/v1/service-tokens/%s/mint", contractId)
 	r := &MintServiceTokenRequest{
 		Request:      NewPostRequest(path),
@@ -77,10 +77,7 @@ func (l *LBD) MintServiceToken(contractId string, to string, amount *big.Int, ow
 
 	resp, err := l.Do(r, true)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	ret := &struct {
-		TxHash string `json:"txhash"`
-	}{}
-	return ret.TxHash, json.Unmarshal(resp.ResponseData, ret)
+	return UnmarshalTransaction(resp.ResponseData)
 }
