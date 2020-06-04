@@ -14,3 +14,10 @@ func TestCreateNonFungible(t *testing.T) {
 	is.Nil(err)
 	t.Log(ret)
 }
+
+func TestMintNonFungible(t *testing.T) {
+	is := initializeTest(t)
+	ret, err := l.MintNonFungible(itemTokenContractId, "10000002", "Nobnyaga", "uwawa", toAddress, owner)
+	is.Nil(err)
+	t.Log(ret)
+}

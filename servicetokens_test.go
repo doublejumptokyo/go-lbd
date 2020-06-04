@@ -23,7 +23,7 @@ func TestRetrieveServiceTokenInformation(t *testing.T) {
 
 func TestMintServiceToken(t *testing.T) {
 	is := initializeTest(t)
-	ret, err := l.MintServiceToken(serviceTokenContractId, "tlink13j9ctt0r05q7hq7syf34qm973hl5hftk9m662g", big.NewInt(1000), owner)
+	ret, err := l.MintServiceToken(serviceTokenContractId, toAddress, big.NewInt(1000), owner)
 	is.Nil(err)
 	t.Log(ret)
 }
