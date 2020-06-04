@@ -11,11 +11,18 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"net/http"
+	"strings"
 	"time"
 )
 
 const (
 	CashewBaseURL = "https://test-api-blockchain.line.me"
+)
+
+type Network string
+
+const (
+	Cashew Network = "Cashew"
 )
 
 var (
@@ -26,81 +33,15 @@ var (
 )
 
 type LBD struct {
+	Network   Network
 	baseURL   string
 	apiKey    string
 	apiSecret string
 }
 
-type Requester interface {
-	Method() string
-	Path() string
-	Nonce() string
-	Timestamp() string
-	Encode() string
-}
-
-type Request struct {
-	nonce     string
-	timestamp int64
-	method    string
-	path      string
-}
-
-func NewGetRequest(path string) *Request {
-	return NewRequest("GET", path)
-}
-
-func NewPostRequest(path string) *Request {
-	return NewRequest("POST", path)
-}
-
-func NewRequest(method, path string) *Request {
-	now := NowMsec()
-	return &Request{
-		nonce:     GenerateNonce(now),
-		timestamp: now,
-		method:    method,
-		path:      path,
-	}
-}
-
-func (r *Request) Method() string {
-	return r.method
-}
-
-func (r *Request) Path() string {
-	return r.path
-}
-
-func (r *Request) Nonce() string {
-	return r.nonce
-}
-
-func (r *Request) Timestamp() string {
-	return fmt.Sprint(r.timestamp)
-}
-
-func (r *Request) Encode() string {
-	return fmt.Sprintf("%s%s%s%s", r.Nonce(), r.Timestamp(), r.method, r.path)
-}
-
-// type Method string
-
-// const (
-// 	MethodGet  Method = "GET"
-// 	MethodPost        = "POST"
-// 	MethodPut         = "PUT"
-// )
-
-type Response struct {
-	ResponseTime  int64           `json:"responseTime"`
-	StatusCode    int64           `json:"statusCode"`
-	StatusMessage string          `json:"statusMessage"`
-	ResponseData  json.RawMessage `json:"responseData"`
-}
-
 func NewLBD(apiKey string, secret string) (*LBD, error) {
 	l := &LBD{
+		Network:   Cashew,
 		baseURL:   CashewBaseURL,
 		apiKey:    apiKey,
 		apiSecret: secret,
@@ -117,7 +58,15 @@ func (l LBD) Sign(r Requester) string {
 	return base64.StdEncoding.EncodeToString(sig)
 }
 
-func (l LBD) Do(r Requester, body []byte, sign bool) (*Response, error) {
+func (l LBD) IsAddress(s string) bool {
+	prefix := "link"
+	if l.Network == Cashew {
+		prefix = "tlink"
+	}
+	return strings.HasPrefix(s, prefix)
+}
+
+func (l *LBD) Do(r Requester, body []byte, sign bool) (*Response, error) {
 	ctx := context.TODO()
 	url := l.baseURL + r.Path()
 
@@ -173,6 +122,66 @@ func (l LBD) Do(r Requester, body []byte, sign bool) (*Response, error) {
 	}
 
 	return ret, nil
+}
+
+type Requester interface {
+	Method() string
+	Path() string
+	Nonce() string
+	Timestamp() string
+	Encode() string
+}
+
+type Request struct {
+	nonce     string
+	timestamp int64
+	method    string
+	path      string
+}
+
+func NewGetRequest(path string) *Request {
+	return NewRequest("GET", path)
+}
+
+func NewPostRequest(path string) *Request {
+	return NewRequest("POST", path)
+}
+
+func NewRequest(method, path string) *Request {
+	now := NowMsec()
+	return &Request{
+		nonce:     GenerateNonce(now),
+		timestamp: now,
+		method:    method,
+		path:      path,
+	}
+}
+
+func (r *Request) Method() string {
+	return r.method
+}
+
+func (r *Request) Path() string {
+	return r.path
+}
+
+func (r *Request) Nonce() string {
+	return r.nonce
+}
+
+func (r *Request) Timestamp() string {
+	return fmt.Sprint(r.timestamp)
+}
+
+func (r *Request) Encode() string {
+	return fmt.Sprintf("%s%s%s%s", r.Nonce(), r.Timestamp(), r.method, r.path)
+}
+
+type Response struct {
+	ResponseTime  int64           `json:"responseTime"`
+	StatusCode    int64           `json:"statusCode"`
+	StatusMessage string          `json:"statusMessage"`
+	ResponseData  json.RawMessage `json:"responseData"`
 }
 
 func NowMsec() int64 {
