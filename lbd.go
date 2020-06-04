@@ -118,7 +118,7 @@ func (l *LBD) Do(r Requester, sign bool) (*Response, error) {
 	}
 
 	if resp.StatusCode >= 400 {
-		return ret, fmt.Errorf("Backend returns status %d msg: %s", ret.StatusCode, ret.StatusMessage)
+		return ret, fmt.Errorf("Backend returns status: %d msg: %s", ret.StatusCode, ret.StatusMessage)
 	}
 
 	return ret, nil
