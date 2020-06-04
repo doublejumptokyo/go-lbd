@@ -27,7 +27,7 @@ func (r CreateNonFungibleRequest) Encode() string {
 func (l *LBD) CreateNonFungible(contractId, name, meta string, owner *Account) (*Response, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles", contractId)
 	r := CreateNonFungibleRequest{NewPostRequest(path), owner.Address, owner.Secret, name, meta}
-	return l.Do(r, nil, true)
+	return l.Do(r, true)
 }
 
 type MintNonFungibleRequest struct {

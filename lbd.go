@@ -66,7 +66,7 @@ func (l LBD) IsAddress(s string) bool {
 	return strings.HasPrefix(s, prefix)
 }
 
-func (l *LBD) Do(r Requester, body []byte, sign bool) (*Response, error) {
+func (l *LBD) Do(r Requester, sign bool) (*Response, error) {
 	ctx := context.TODO()
 	url := l.baseURL + r.Path()
 

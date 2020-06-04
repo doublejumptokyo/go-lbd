@@ -24,7 +24,7 @@ type ServiceToken struct {
 func (l *LBD) ListAllServiceTokens() ([]*ServiceToken, error) {
 	path := fmt.Sprintf("/v1/service-tokens")
 	r := NewGetRequest(path)
-	resp, err := l.Do(r, nil, true)
+	resp, err := l.Do(r, true)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +35,7 @@ func (l *LBD) ListAllServiceTokens() ([]*ServiceToken, error) {
 func (l *LBD) RetrieveServiceTokenInformation(contractId string) (*ServiceToken, error) {
 	path := fmt.Sprintf("/v1/service-tokens/%s", contractId)
 	r := NewGetRequest(path)
-	resp, err := l.Do(r, nil, true)
+	resp, err := l.Do(r, true)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +75,7 @@ func (l *LBD) MintServiceToken(contractId string, to string, amount *big.Int, ow
 		r.ToUserId = to
 	}
 
-	resp, err := l.Do(r, nil, true)
+	resp, err := l.Do(r, true)
 	if err != nil {
 		return "", err
 	}

@@ -2,7 +2,7 @@ package lbd
 
 func (l LBD) RetrieveServerTime() (int64, error) {
 	r := NewGetRequest("/v1/time")
-	ret, err := l.Do(r, nil, false)
+	ret, err := l.Do(r, false)
 	if err != nil {
 		return 0, err
 	}
