@@ -7,9 +7,10 @@ import (
 )
 
 type Wallet struct {
-	Name          string `json:"name"`
-	WalletAddress string `json:"walletAddress"`
-	CreatedAt     int64  `json:"createdAt"`
+	Name      string `json:"name"`
+	Address   string `json:"walletAddress"`
+	Secret    string `json:"-"`
+	CreatedAt int64  `json:"createdAt"`
 }
 
 func (l LBD) ListAllServiceWallets() ([]*Wallet, error) {
@@ -41,7 +42,7 @@ func (r TransferBaseCoinsRequest) Encode() string {
 
 }
 
-func (l *LBD) TransferBaseCoins(from *Account, to string, amount *big.Int) (*Transaction, error) {
+func (l *LBD) TransferBaseCoins(from *Wallet, to string, amount *big.Int) (*Transaction, error) {
 	path := fmt.Sprintf("/v1/wallets/%s/base-coin/transfer", from.Address)
 
 	r := TransferBaseCoinsRequest{

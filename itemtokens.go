@@ -6,11 +6,6 @@ import (
 
 func ListAllNonFungibles(contractId string) {}
 
-type Account struct {
-	Address string
-	Secret  string
-}
-
 type CreateNonFungibleRequest struct {
 	*Request
 	OwnerAddress string `json:"ownerAddress"`
@@ -24,7 +19,7 @@ func (r CreateNonFungibleRequest) Encode() string {
 	return fmt.Sprintf("%s?meta=%s&name=%s&ownerAddress=%s&ownerSecret=%s", base, r.Meta, r.Name, r.OwnerAddress, r.OwnerSecret)
 }
 
-func (l *LBD) CreateNonFungible(contractId, name, meta string, owner *Account) (*Transaction, error) {
+func (l *LBD) CreateNonFungible(contractId, name, meta string, owner *Wallet) (*Transaction, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles", contractId)
 	r := CreateNonFungibleRequest{NewPostRequest(path), owner.Address, owner.Secret, name, meta}
 	resp, err := l.Do(r, true)
@@ -52,7 +47,7 @@ func (r MintNonFungibleRequest) Encode() string {
 	return fmt.Sprintf("%s?meta=%s&name=%s&ownerAddress=%s&ownerSecret=%s&toAddress=%s", base, r.Meta, r.Name, r.OwnerAddress, r.OwnerSecret, r.ToAddress)
 }
 
-func (l *LBD) MintNonFungible(contractId, tokenType, name, meta, to string, owner *Account) (*Transaction, error) {
+func (l *LBD) MintNonFungible(contractId, tokenType, name, meta, to string, owner *Wallet) (*Transaction, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/%s/mint", contractId, tokenType)
 
 	r := MintNonFungibleRequest{

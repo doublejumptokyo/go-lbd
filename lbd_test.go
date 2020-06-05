@@ -10,7 +10,7 @@ import (
 var (
 	l         = &LBD{}
 	serviceID = os.Getenv("SERVICE_ID")
-	owner     = &Account{os.Getenv("OWNER_ADDR"), os.Getenv("OWNER_SECRET")}
+	owner     = &Wallet{Address: os.Getenv("OWNER_ADDR"), Secret: os.Getenv("OWNER_SECRET")}
 	toAddress = "tlink13j9ctt0r05q7hq7syf34qm973hl5hftk9m662g"
 )
 
