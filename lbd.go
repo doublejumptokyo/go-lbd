@@ -37,6 +37,7 @@ type LBD struct {
 	baseURL   string
 	apiKey    string
 	apiSecret string
+	Debug     bool
 }
 
 func NewLBD(apiKey string, secret string) (*LBD, error) {
@@ -45,6 +46,7 @@ func NewLBD(apiKey string, secret string) (*LBD, error) {
 		baseURL:   CashewBaseURL,
 		apiKey:    apiKey,
 		apiSecret: secret,
+		Debug:     false,
 	}
 	return l, nil
 }
@@ -70,8 +72,6 @@ func (l *LBD) Do(r Requester, sign bool) (*Response, error) {
 	ctx := context.TODO()
 	url := l.baseURL + r.Path()
 
-	fmt.Println(url)
-
 	body, err := json.Marshal(r)
 	if err != nil {
 		return nil, err
@@ -88,9 +88,6 @@ func (l *LBD) Do(r Requester, sign bool) (*Response, error) {
 	req.Header.Add("service-api-key", l.apiKey)
 	req.Header.Add("Content-Type", "application/json")
 
-	fmt.Println(string(body))
-	fmt.Println(r.Encode())
-
 	if sign {
 		sig := l.Sign(r)
 		req.Header.Add("nonce", r.Nonce())
@@ -98,7 +95,12 @@ func (l *LBD) Do(r Requester, sign bool) (*Response, error) {
 		req.Header.Add("signature", sig)
 	}
 
-	fmt.Println(req.Header)
+	if l.Debug {
+		fmt.Println(url)
+		fmt.Println(string(body))
+		fmt.Println(r.Encode())
+		fmt.Println(req.Header)
+	}
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -145,6 +147,10 @@ func NewGetRequest(path string) *Request {
 
 func NewPostRequest(path string) *Request {
 	return NewRequest("POST", path)
+}
+
+func NewPutRequest(path string) *Request {
+	return NewRequest("PUT", path)
 }
 
 func NewRequest(method, path string) *Request {

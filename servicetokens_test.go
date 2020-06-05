@@ -22,6 +22,9 @@ func TestRetrieveServiceTokenInformation(t *testing.T) {
 }
 
 func TestMintServiceToken(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
 	is := initializeTest(t)
 	ret, err := l.MintServiceToken(serviceTokenContractId, toAddress, big.NewInt(1000), owner)
 	is.Nil(err)

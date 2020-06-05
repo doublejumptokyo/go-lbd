@@ -32,7 +32,7 @@ func TestSign(t *testing.T) {
 	is.Equal(sig1, expected1)
 
 	// Example 3
-	ex2 := &MintNonFungibleRequest{
+	ex2 := &UpdateNonFungibleInformationRequest{
 		Request:      &Request{nonce, timestamp, "PUT", "/v1/item-tokens/61e14383/non-fungibles/10000001/00000001"},
 		OwnerAddress: "tlink1fr9mpexk5yq3hu6jc0npajfsa0x7tl427fuveq",
 		OwnerSecret:  "uhbdnNvIqQFnnIFDDG8EuVxtqkwsLtDR/owKInQIYmo=",
@@ -51,5 +51,9 @@ func initializeTest(t *testing.T) is.I {
 
 	l, err = NewLBD(os.Getenv("API_KEY"), os.Getenv("API_SECRET"))
 	is.Nil(err)
+
+	if os.Getenv("DEBUG") != "" {
+		l.Debug = true
+	}
 	return is
 }
