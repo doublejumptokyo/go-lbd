@@ -10,6 +10,13 @@ var (
 	tokenType           = "10000001"
 )
 
+func TestListAllNonFungibles(t *testing.T) {
+	is := initializeTest(t)
+	ret, err := l.ListAllNonFungibles(itemTokenContractId)
+	is.Nil(err)
+	t.Log(*ret[1])
+}
+
 func TestCreateNonFungible(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")

@@ -5,7 +5,35 @@ import (
 	"fmt"
 )
 
-func ListAllNonFungibles(contractId string) {}
+type TokenType struct {
+	TokenType   string   `json:"tokenType"`
+	Name        string   `json:"name"`
+	Meta        string   `json:"meta"`
+	CreatedAt   int64    `json:"createdAt"`
+	TotalSupply string   `json:"totalSupply"`
+	TotalMint   string   `json:"totalMint"`
+	TotalBurn   string   `json:"totalBurn"`
+	Token       []*Token `json:"token"`
+}
+
+type Token struct {
+	TokenIndex string `json:"tokenIndex"`
+	Name       string `json:"name"`
+	Meta       string `json:"meta"`
+	CreatedAt  int64  `json:"createdAt"`
+	BurnedAt   int64  `json:"burnedAt"`
+}
+
+func (l LBD) ListAllNonFungibles(contractId string) ([]*TokenType, error) {
+	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles", contractId)
+	r := NewGetRequest(path)
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+	ret := []*TokenType{}
+	return ret, json.Unmarshal(resp.ResponseData, &ret)
+}
 
 type CreateNonFungibleRequest struct {
 	*Request
@@ -40,9 +68,7 @@ type NonFungibleInformation struct {
 
 func (l *LBD) RetrieveNonFungibleInformation(contractId, tokenType, tokenIndex string) (*NonFungibleInformation, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/%s/%s", contractId, tokenType, tokenIndex)
-
 	r := NewGetRequest(path)
-
 	resp, err := l.Do(r, true)
 	if err != nil {
 		return nil, err
