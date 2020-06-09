@@ -60,15 +60,8 @@ type Fee struct {
 }
 
 type Msg struct {
-	Type  string   `json:"type"`
-	Value MsgValue `json:"value"`
-}
-
-type MsgValue struct {
-	From       string `json:"from"`
-	ContractID string `json:"contractId"`
-	To         string `json:"to"`
-	Amount     int64  `json:"amount"`
+	Type  string          `json:"type"`
+	Value json.RawMessage `json:"value"`
 }
 
 type Signature struct {
