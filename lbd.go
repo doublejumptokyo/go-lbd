@@ -44,7 +44,7 @@ type LBD struct {
 	baseURL   string
 	apiKey    string
 	apiSecret string
-	Owenr     *Wallet
+	Owner     *Wallet
 	Debug     bool
 }
 
@@ -54,7 +54,7 @@ func NewLBD(apiKey string, secret string, owner *Wallet) (*LBD, error) {
 		baseURL:   CashewBaseURL,
 		apiKey:    apiKey,
 		apiSecret: secret,
-		Owenr:     owner,
+		Owner:     owner,
 		Debug:     false,
 	}
 	return l, nil

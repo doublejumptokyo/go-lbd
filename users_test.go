@@ -26,7 +26,7 @@ func TestFuncTransferNonFungibleUserWallet(t *testing.T) {
 
 func TestIssueSessionTokenForProxySetting(t *testing.T) {
 	is := initializeTest(t)
-	ret, err := l.IssueSessionTokenForProxySetting("U8430f7829d8a78aba7f5dcf9a0da9d6c", itemTokenContractId, RequestTypeRedirectUri, owner)
+	ret, err := l.IssueSessionTokenForProxySetting("U8430f7829d8a78aba7f5dcf9a0da9d6c", itemTokenContractId, RequestTypeAOA)
 	is.Nil(err)
 	t.Log(ret)
 }

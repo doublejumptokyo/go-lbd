@@ -62,12 +62,12 @@ func (r IssueSessionTokenForProxySettingRequest) Encode() string {
 	return fmt.Sprintf("%s&ownerAddress=%s&ownerSecret=%s", base, r.OwnerAddress, r.OwnerSecret)
 }
 
-func (l *LBD) IssueSessionTokenForProxySetting(userId, contractId string, requestType RequestType, owner *Wallet) (*SessionToken, error) {
+func (l *LBD) IssueSessionTokenForProxySetting(userId, contractId string, requestType RequestType) (*SessionToken, error) {
 	path := fmt.Sprintf("/v1/users/%s/item-tokens/%s/request-proxy?requestType=%s", userId, contractId, requestType)
 	r := &IssueSessionTokenForProxySettingRequest{
 		Request:      NewPostRequest(path),
-		OwnerAddress: owner.Address,
-		OwnerSecret:  owner.Secret,
+		OwnerAddress: l.Owner.Address,
+		OwnerSecret:  l.Owner.Secret,
 	}
 
 	resp, err := l.Do(r, true)
