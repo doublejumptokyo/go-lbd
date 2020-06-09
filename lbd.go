@@ -44,15 +44,17 @@ type LBD struct {
 	baseURL   string
 	apiKey    string
 	apiSecret string
+	Owenr     *Wallet
 	Debug     bool
 }
 
-func NewLBD(apiKey string, secret string) (*LBD, error) {
+func NewLBD(apiKey string, secret string, owner *Wallet) (*LBD, error) {
 	l := &LBD{
 		Network:   Cashew,
 		baseURL:   CashewBaseURL,
 		apiKey:    apiKey,
 		apiSecret: secret,
+		Owenr:     owner,
 		Debug:     false,
 	}
 	return l, nil

@@ -10,7 +10,7 @@ import (
 var (
 	l                   = &LBD{}
 	serviceID           = os.Getenv("SERVICE_ID")
-	owner               = &Wallet{Address: os.Getenv("OWNER_ADDR"), Secret: os.Getenv("OWNER_SECRET")}
+	owner               = NewWallet(os.Getenv("OWNER_ADDR"), os.Getenv("OWNER_SECRET"))
 	toAddress           = "U8430f7829d8a78aba7f5dcf9a0da9d6c"
 	itemTokenContractId = os.Getenv("ITEMTOKEN_CONTRACT_ID")
 	tokenType           = "10000001"
@@ -24,7 +24,7 @@ func TestSign(t *testing.T) {
 	nonce := "Bp0IqgXE"
 	timestamp := int64(1581850266351)
 
-	l, err := NewLBD(key, secret)
+	l, err := NewLBD(key, secret, nil)
 	is.Nil(err)
 
 	// Example 1
@@ -51,7 +51,7 @@ func initializeTest(t *testing.T) is.I {
 	is := is.New(t)
 	var err error
 
-	l, err = NewLBD(os.Getenv("API_KEY"), os.Getenv("API_SECRET"))
+	l, err = NewLBD(os.Getenv("API_KEY"), os.Getenv("API_SECRET"), owner)
 	is.Nil(err)
 
 	if os.Getenv("DEBUG") != "" {

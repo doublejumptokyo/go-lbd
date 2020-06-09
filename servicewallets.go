@@ -13,6 +13,13 @@ type Wallet struct {
 	CreatedAt int64  `json:"createdAt"`
 }
 
+func NewWallet(address, secret string) *Wallet {
+	return &Wallet{
+		Address: address,
+		Secret:  secret,
+	}
+}
+
 func (l LBD) ListAllServiceWallets() ([]*Wallet, error) {
 	path := fmt.Sprintf("/v1/wallets")
 	r := NewGetRequest(path)
