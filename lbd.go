@@ -32,6 +32,13 @@ var (
 	randSrc               = rand.NewSource(time.Now().UnixNano())
 )
 
+type RequestType string
+
+const (
+	RequestTypeRedirectUri RequestType = "redirectUri"
+	RequestTypeAOA                     = "aoa"
+)
+
 type LBD struct {
 	Network   Network
 	baseURL   string

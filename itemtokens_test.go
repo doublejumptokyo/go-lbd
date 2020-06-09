@@ -1,13 +1,7 @@
 package lbd
 
 import (
-	"os"
 	"testing"
-)
-
-var (
-	itemTokenContractId = os.Getenv("ITEMTOKEN_CONTRACT_ID")
-	tokenType           = "10000001"
 )
 
 func TestListAllNonFungibles(t *testing.T) {
