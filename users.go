@@ -3,6 +3,7 @@ package lbd
 import (
 	"encoding/json"
 	"fmt"
+	"math/big"
 )
 
 type UserInformation struct {
@@ -47,6 +48,44 @@ func (r *SessionToken) Marshal() ([]byte, error) {
 type SessionToken struct {
 	RequestSessionToken string `json:"requestSessionToken"`
 	RedirectURI         string `json:"redirectUri"`
+}
+
+type IssueSessionTokenForBaseCoinTransferRequest struct {
+	*Request
+	ToUserId    string      `json:"toUserId,omitempty"`
+	ToAddress   string      `json:"toAddress,omitempty"`
+	Amount      string      `json:"amount"`
+	RequestType RequestType `json:"-"`
+	// LandingUri    string      `json:"landingUri,omitempty"`
+}
+
+func (r IssueSessionTokenForBaseCoinTransferRequest) Encode() string {
+	base := r.Request.Encode()
+	if r.ToUserId != "" {
+		return fmt.Sprintf("%s&amount=%s&toUserId=%s", base, r.Amount, r.ToUserId)
+	}
+	return fmt.Sprintf("%s&amount=%s&toAddress=%s", base, r.Amount, r.ToAddress)
+}
+
+func (l *LBD) IssueSessionTokenForBaseCoinTransfer(fromUserId, to string, amount *big.Int, requestType RequestType) (*SessionToken, error) {
+	path := fmt.Sprintf("/v1/users/%s/base-coin/request-transfer?requestType=%s", fromUserId, requestType)
+	r := &IssueSessionTokenForBaseCoinTransferRequest{
+		Request:     NewPostRequest(path),
+		Amount:      amount.String(),
+		RequestType: requestType,
+	}
+
+	if l.IsAddress(to) {
+		r.ToAddress = to
+	} else {
+		r.ToUserId = to
+	}
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+	return UnmarshalSessionToken(resp.ResponseData)
 }
 
 type IssueSessionTokenForProxySettingRequest struct {

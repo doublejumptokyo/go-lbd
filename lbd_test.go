@@ -11,9 +11,11 @@ var (
 	l                   = &LBD{}
 	serviceID           = os.Getenv("SERVICE_ID")
 	owner               = NewWallet(os.Getenv("OWNER_ADDR"), os.Getenv("OWNER_SECRET"))
-	toAddress           = "U8430f7829d8a78aba7f5dcf9a0da9d6c"
 	itemTokenContractId = os.Getenv("ITEMTOKEN_CONTRACT_ID")
 	tokenType           = "10000001"
+	userId              = os.Getenv("USER_ID")
+	toAddress           = userId
+	sessionToken        = os.Getenv("SESSION")
 )
 
 func TestSign(t *testing.T) {
@@ -49,13 +51,28 @@ func TestSign(t *testing.T) {
 
 func initializeTest(t *testing.T) is.I {
 	is := is.New(t)
-	var err error
+	return is
+}
 
+func TestMain(m *testing.M) {
+	var err error
 	l, err = NewLBD(os.Getenv("API_KEY"), os.Getenv("API_SECRET"), owner)
-	is.Nil(err)
+	if err != nil {
+		panic(err)
+	}
 
 	if os.Getenv("DEBUG") != "" {
 		l.Debug = true
 	}
-	return is
+
+	status := m.Run()
+	os.Exit(status)
+}
+
+func onlyTxMode(t *testing.T) {
+	t.Helper()
+	if !(os.Getenv("TX") == "1") {
+		t.Skip("skipping test in no Tx mode. Set env TX=1")
+	}
+	return
 }

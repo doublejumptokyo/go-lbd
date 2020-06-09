@@ -14,9 +14,7 @@ func TestListAllServiceWallets(t *testing.T) {
 }
 
 func TestTransferBaseCoins(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping test in short mode.")
-	}
+	onlyTxMode(t)
 	is := initializeTest(t)
 	ret, err := l.TransferBaseCoins(owner, toAddress, big.NewInt(1))
 	is.Nil(err)
