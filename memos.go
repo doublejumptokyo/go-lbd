@@ -3,7 +3,6 @@ package lbd
 import (
 	"encoding/json"
 	"fmt"
-	"math/big"
 )
 
 type MemosRequest struct {
@@ -13,25 +12,20 @@ type MemosRequest struct {
 	Memo          string `json:"memo"`
 }
 
-func (l *LBD) SaveTheText(fromUserId, to string, amount *big.Int, requestType RequestType) (*SessionToken, error) {
-	path := fmt.Sprintf("/v1/users/%s/base-coin/request-transfer?requestType=%s", fromUserId, requestType)
-	r := &IssueSessionTokenForBaseCoinTransferRequest{
-		Request:     NewPostRequest(path),
-		Amount:      amount.String(),
-		RequestType: requestType,
-	}
-
-	if l.IsAddress(to) {
-		r.ToAddress = to
-	} else {
-		r.ToUserId = to
+func (l *LBD) SaveTheText(memo) (*Transaction, error) {
+	path := fmt.Sprintf("/v1/memos")
+	r := &MemosRequest{
+		Request:       NewPostRequest(path),
+		WalletAddress: walletAddress,
+		WalletSecret:  walletSecret,
+		Memo:          memo,
 	}
 
 	resp, err := l.Do(r, true)
 	if err != nil {
 		return nil, err
 	}
-	return UnmarshalSessionToken(resp.ResponseData)
+	return UnmarshalTransaction(resp.ResponseData)
 }
 
 type MemoInformation struct {
