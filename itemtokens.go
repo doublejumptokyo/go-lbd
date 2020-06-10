@@ -102,7 +102,7 @@ func (l *LBD) MintNonFungible(contractId, tokenType, name, meta, to string, owne
 		Request:      NewPostRequest(path),
 		OwnerAddress: owner.Address,
 		OwnerSecret:  owner.Secret,
-		Name:         na,
+		Name:         name,
 		Meta:         meta,
 	}
 
