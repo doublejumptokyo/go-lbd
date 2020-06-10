@@ -9,7 +9,7 @@ import (
 func TestSaveTheText(t *testing.T) {
 	onlyTxMode(t)
 	is := initializeTest(t)
-	ret, err := l.SaveTheText()
+	ret, err := l.SaveTheText("てすとだよー",owner)
 	is.Nil(err)
 	t.Log(ret)
 }

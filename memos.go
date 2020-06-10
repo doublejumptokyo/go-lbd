@@ -12,12 +12,12 @@ type MemosRequest struct {
 	Memo          string `json:"memo"`
 }
 
-func (l *LBD) SaveTheText(memo) (*Transaction, error) {
+func (l *LBD) SaveTheText(memo string, owner *Wallet) (*Transaction, error) {
 	path := fmt.Sprintf("/v1/memos")
 	r := &MemosRequest{
 		Request:       NewPostRequest(path),
-		WalletAddress: walletAddress,
-		WalletSecret:  walletSecret,
+		WalletAddress: owner.Address,
+		WalletSecret:  owner.Secret,
 		Memo:          memo,
 	}
 
@@ -39,6 +39,6 @@ func (l LBD) RetrieveTheText(txHash string) (*MemoInformation, error) {
 		return nil, err
 	}
 
-	ret := new(UserInformation)
+	ret := new(MemoInformation)
 	return ret, json.Unmarshal(data.ResponseData, ret)
 }
