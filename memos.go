@@ -37,7 +37,7 @@ type MemoInformation struct {
 	Memo string `json:"memo"`
 }
 
-func (l LBD) RetrieveTheText(txHash string) (*MemoInformation, error) {
+func (l LBD) RetrieveText(txHash string) (*MemoInformation, error) {
 	r := NewGetRequest("/v1/memos/" + txHash)
 	data, err := l.Do(r, true)
 	if err != nil {
