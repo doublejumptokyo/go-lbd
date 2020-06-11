@@ -20,7 +20,6 @@ func TestCreateNonFungible(t *testing.T) {
 }
 
 func TestRetrieveNonFungibleInformation(t *testing.T) {
-	onlyTxMode(t)
 	is := initializeTest(t)
 	ret, err := l.RetrieveNonFungibleInformation(itemTokenContractId, tokenType, "00000001")
 	is.Nil(err)

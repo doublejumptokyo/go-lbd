@@ -1,7 +1,6 @@
 package lbd
 
 import (
-	"math/big"
 	"testing"
 )
 

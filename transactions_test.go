@@ -1,9 +1,6 @@
 package lbd
 
-import (
-	"fmt"
-	"testing"
-)
+import "testing"
 
 func TestRetrieveTransactionInformation(t *testing.T) {
 	is := initializeTest(t)
@@ -11,5 +8,4 @@ func TestRetrieveTransactionInformation(t *testing.T) {
 	ret, err := l.RetrieveTransactionInformation(txHash)
 	is.Nil(err)
 	t.Log(ret)
-	fmt.Println(ret)
 }
