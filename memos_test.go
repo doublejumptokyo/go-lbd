@@ -5,18 +5,20 @@ import (
 )
 
 
-func TestSaveTheText(t *testing.T) {
-	// onlyTxMode(t)
+func TestSaveText(t *testing.T) {
+	onlyTxMode(t)
 	is := initializeTest(t)
-	ret, err := l.SaveTheText("てすとだよー",owner)
+	ret, err := l.SaveText("てすとだよー",owner)
 	is.Nil(err)
 	t.Log(ret)
 }
 
 func TestRetrieveTheText(t *testing.T) {
 	is := initializeTest(t)
-	txHash := "C1A24B79009E50E8740E4EC697445D62B368F3707074549EA83A0C478E8AA9A3"
-	ret, err := l.RetrieveTheText(txHash)
+	if os.Getenv("MEMOS_TX_HASH") == "" {
+		t.Skip()
+	}
+	ret, err := l.RetrieveTheText(os.Getenv("MEMOS_TX_HASH"))
 	is.Nil(err)
 	t.Log(ret)
 }
