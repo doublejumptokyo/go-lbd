@@ -14,7 +14,7 @@ var (
 func TestSaveText(t *testing.T) {
 	onlyTxMode(t)
 	is := initializeTest(t)
-	ret, err := l.SaveText("てすとだよー", owner)
+	ret, err := l.SaveText(memoMsg, owner)
 	is.Nil(err)
 	t.Log(ret)
 }
