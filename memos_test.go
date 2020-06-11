@@ -6,7 +6,7 @@ import (
 
 
 func TestSaveTheText(t *testing.T) {
-	onlyTxMode(t)
+	// onlyTxMode(t)
 	is := initializeTest(t)
 	ret, err := l.SaveTheText("てすとだよー",owner)
 	is.Nil(err)
