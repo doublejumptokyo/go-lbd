@@ -14,7 +14,7 @@ type MemosRequest struct {
 
 func (r MemosRequest) Encode() string {
 	base := r.Request.Encode()
-	return fmt.Sprintf("%s?memo=%s&ownerAddress=%s&ownerSecret=%s", base, r.Memo, r.WalletAddress, r.WalletSecret)
+	return fmt.Sprintf("%s?memo=%s&walletAddress=%s&walletSecret=%s", base, r.Memo, r.WalletAddress, r.WalletSecret)
 }
 
 func (l *LBD) SaveTheText(memo string, owner *Wallet) (*Transaction, error) {
