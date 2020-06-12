@@ -5,8 +5,8 @@ import (
 )
 
 func TestRetrieveServerTime(t *testing.T) {
-	is := initializeTest(t)
+	assert := initializeTest(t)
 	tm, err := l.RetrieveServerTime()
-	is.Nil(err)
+	assert.Nil(err)
 	t.Logf("Server time: %d", tm)
 }
