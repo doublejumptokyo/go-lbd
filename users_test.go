@@ -31,7 +31,7 @@ func TestIssueSessionTokenForBaseCoinTransfer(t *testing.T) {
 func TestFuncTransferNonFungibleUserWallet(t *testing.T) {
 	onlyTxMode(t)
 	is := initializeTest(t)
-	ret, err := l.TransferNonFungibleUserWallet(itemTokenContractId, userId, "tlink10ps670a0x6ma5knthjjswgw89d44vmz6xm3umr", tokenType, "00000009", owner)
+	ret, err := l.TransferNonFungibleUserWallet(itemTokenContractId, userId, "tlink10ps670a0x6ma5knthjjswgw89d44vmz6xm3umr", tokenType, "00000009")
 	is.Nil(err)
 	t.Log(ret)
 }

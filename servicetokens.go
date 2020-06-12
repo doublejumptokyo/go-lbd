@@ -60,12 +60,12 @@ func (r MintServiceTokenRequest) Encode() string {
 	return fmt.Sprintf("%s?amount=%s&ownerAddress=%s&ownerSecret=%s&toAddress=%s", base, r.Amount, r.OwnerAddress, r.OwnerSecret, r.ToAddress)
 }
 
-func (l *LBD) MintServiceToken(contractId string, to string, amount *big.Int, owner *Wallet) (*Transaction, error) {
+func (l *LBD) MintServiceToken(contractId string, to string, amount *big.Int) (*Transaction, error) {
 	path := fmt.Sprintf("/v1/service-tokens/%s/mint", contractId)
 	r := &MintServiceTokenRequest{
 		Request:      NewPostRequest(path),
-		OwnerAddress: owner.Address,
-		OwnerSecret:  owner.Secret,
+		OwnerAddress: l.Owner.Address,
+		OwnerSecret:  l.Owner.Secret,
 		Amount:       amount.String(),
 	}
 

@@ -48,9 +48,9 @@ func (r CreateNonFungibleRequest) Encode() string {
 	return fmt.Sprintf("%s?meta=%s&name=%s&ownerAddress=%s&ownerSecret=%s", base, r.Meta, r.Name, r.OwnerAddress, r.OwnerSecret)
 }
 
-func (l *LBD) CreateNonFungible(contractId, name, meta string, owner *Wallet) (*Transaction, error) {
+func (l *LBD) CreateNonFungible(contractId, name, meta string) (*Transaction, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles", contractId)
-	r := CreateNonFungibleRequest{NewPostRequest(path), owner.Address, owner.Secret, name, meta}
+	r := CreateNonFungibleRequest{NewPostRequest(path), l.Owner.Address, l.Owner.Secret, name, meta}
 	resp, err := l.Do(r, true)
 	if err != nil {
 		return nil, err
@@ -95,13 +95,13 @@ func (r MintNonFungibleRequest) Encode() string {
 	return fmt.Sprintf("%s?meta=%s&name=%s&ownerAddress=%s&ownerSecret=%s&toAddress=%s", base, r.Meta, r.Name, r.OwnerAddress, r.OwnerSecret, r.ToAddress)
 }
 
-func (l *LBD) MintNonFungible(contractId, tokenType, name, meta, to string, owner *Wallet) (*Transaction, error) {
+func (l *LBD) MintNonFungible(contractId, tokenType, name, meta, to string) (*Transaction, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/%s/mint", contractId, tokenType)
 
 	r := MintNonFungibleRequest{
 		Request:      NewPostRequest(path),
-		OwnerAddress: owner.Address,
-		OwnerSecret:  owner.Secret,
+		OwnerAddress: l.Owner.Address,
+		OwnerSecret:  l.Owner.Secret,
 		Name:         name,
 		Meta:         meta,
 	}
@@ -135,13 +135,13 @@ func (r UpdateNonFungibleInformationRequest) Encode() string {
 	return fmt.Sprintf("%s?name=%s&ownerAddress=%s&ownerSecret=%s", base, r.Name, r.OwnerAddress, r.OwnerSecret)
 }
 
-func (l *LBD) UpdateNonFungibleInformation(contractId, tokenType, tokenIndex, name, meta string, owner *Wallet) (*Transaction, error) {
+func (l *LBD) UpdateNonFungibleInformation(contractId, tokenType, tokenIndex, name, meta string) (*Transaction, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/%s/%s", contractId, tokenType, tokenIndex)
 
 	r := UpdateNonFungibleInformationRequest{
 		Request:      NewPutRequest(path),
-		OwnerAddress: owner.Address,
-		OwnerSecret:  owner.Secret,
+		OwnerAddress: l.Owner.Address,
+		OwnerSecret:  l.Owner.Secret,
 		Name:         name,
 		Meta:         meta,
 	}
