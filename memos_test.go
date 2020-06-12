@@ -4,6 +4,7 @@ import (
 	"os"
 	"testing"
 	"time"
+	// "github.com/stretchr/testify/assert"
 )
 
 var (
@@ -13,9 +14,9 @@ var (
 
 func TestSaveText(t *testing.T) {
 	onlyTxMode(t)
-	is := initializeTest(t)
+	assert := initializeTest(t)
 	ret, err := l.SaveText(memoMsg)
-	is.Nil(err)
+	assert.Nil(err)
 	t.Log(ret)
 }
 
