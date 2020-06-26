@@ -24,7 +24,7 @@ func TestRetrieveServiceTokenInformation(t *testing.T) {
 func TestMintServiceToken(t *testing.T) {
 	onlyTxMode(t)
 	is := initializeTest(t)
-	ret, err := l.MintServiceToken(serviceTokenContractId, toAddress, big.NewInt(1000), owner)
+	ret, err := l.MintServiceToken(serviceTokenContractId, toAddress, big.NewInt(1000))
 	is.Nil(err)
 	t.Log(ret)
 }

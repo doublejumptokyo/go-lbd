@@ -132,12 +132,12 @@ func (r TransferNonFungibleUserWalletRequest) Encode() string {
 	return fmt.Sprintf("%s?ownerAddress=%s&ownerSecret=%s&toAddress=%s", base, r.OwnerAddress, r.OwnerSecret, r.ToAddress)
 }
 
-func (l *LBD) TransferNonFungibleUserWallet(contractId, fromUserId, to, tokenType, tokenIndex string, owner *Wallet) (*Transaction, error) {
+func (l *LBD) TransferNonFungibleUserWallet(contractId, fromUserId, to, tokenType, tokenIndex string) (*Transaction, error) {
 	path := fmt.Sprintf("/v1/users/%s/item-tokens/%s/non-fungibles/%s/%s/transfer", fromUserId, contractId, tokenType, tokenIndex)
 	r := &TransferNonFungibleUserWalletRequest{
 		Request:      NewPostRequest(path),
-		OwnerAddress: owner.Address,
-		OwnerSecret:  owner.Secret,
+		OwnerAddress: l.Owner.Address,
+		OwnerSecret:  l.Owner.Secret,
 	}
 
 	if l.IsAddress(to) {
