@@ -2,11 +2,12 @@ package lbd
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestRetrieveServiceInformation(t *testing.T) {
-	is := initializeTest(t)
 	ret, err := l.RetrieveServiceInformation(serviceID)
-	is.Nil(err)
+	assert.Nil(t, err)
 	t.Log(ret)
 }

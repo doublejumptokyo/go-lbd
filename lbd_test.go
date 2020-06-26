@@ -49,11 +49,6 @@ func TestSign(t *testing.T) {
 	assert.Equal(sig2, expected2)
 }
 
-func initializeTest(t *testing.T) *assert.Assertions {
-	assert := assert.New(t)
-	return assert
-}
-
 func TestMain(m *testing.M) {
 	var err error
 	l, err = NewLBD(os.Getenv("API_KEY"), os.Getenv("API_SECRET"), owner)

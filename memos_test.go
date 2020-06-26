@@ -21,14 +21,13 @@ func TestSaveText(t *testing.T) {
 }
 
 func TestRetrieveText(t *testing.T) {
-	assert := initializeTest(t)
 	if memoTxHash == "" {
 		t.Skip()
 	}
 	time.Sleep(2 * time.Second)
 	ret, err := l.RetrieveText(memoTxHash)
-	assert.Equal(memoMsg, ret.Memo)
+	assert.Equal(t, memoMsg, ret.Memo)
 
-	assert.Nil(err)
+	assert.Nil(t, err)
 	t.Log(ret)
 }
