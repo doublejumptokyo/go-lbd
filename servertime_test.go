@@ -2,11 +2,12 @@ package lbd
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestRetrieveServerTime(t *testing.T) {
-	is := initializeTest(t)
 	tm, err := l.RetrieveServerTime()
-	is.Nil(err)
+	assert.Nil(t, err)
 	t.Logf("Server time: %d", tm)
 }

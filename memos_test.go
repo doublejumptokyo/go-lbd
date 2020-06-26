@@ -4,6 +4,8 @@ import (
 	"os"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -13,21 +15,19 @@ var (
 
 func TestSaveText(t *testing.T) {
 	onlyTxMode(t)
-	is := initializeTest(t)
 	ret, err := l.SaveText(memoMsg)
-	is.Nil(err)
+	assert.Nil(t, err)
 	t.Log(ret)
 }
 
 func TestRetrieveText(t *testing.T) {
-	is := initializeTest(t)
 	if memoTxHash == "" {
 		t.Skip()
 	}
 	time.Sleep(2 * time.Second)
 	ret, err := l.RetrieveText(memoTxHash)
-	is.Equal(memoMsg, ret.Memo)
+	assert.Equal(t, memoMsg, ret.Memo)
 
-	is.Nil(err)
+	assert.Nil(t, err)
 	t.Log(ret)
 }

@@ -3,14 +3,15 @@ package lbd
 import (
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestRetrieveTransactionInformation(t *testing.T) {
-	is := initializeTest(t)
 	if os.Getenv("TX_HASH") == "" {
 		t.Skip()
 	}
 	ret, err := l.RetrieveTransactionInformation(os.Getenv("TX_HASH"))
-	is.Nil(err)
+	assert.Nil(t, err)
 	t.Log(ret)
 }
