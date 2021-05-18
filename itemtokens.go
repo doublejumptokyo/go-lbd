@@ -5,6 +5,26 @@ import (
 	"fmt"
 )
 
+type ItemTokenContractInformation struct {
+	ContractID   string `json:"contractId"`
+	BaseImgURI   string `json:"baseImgUri"`
+	OwnerAddress string `json:"ownerAddress"`
+	CreatedAt    int64  `json:"createdAt"`
+	ServiceID    string `json:"serviceId"`
+}
+
+func (l LBD) RetrieveItemTokenContractInformation(contractId string) (*ItemTokenContractInformation, error) {
+	path := fmt.Sprintf("/v1/item-tokens/%s", contractId)
+	r := NewGetRequest(path)
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+
+	ret := &ItemTokenContractInformation{}
+	return ret, json.Unmarshal(resp.ResponseData, &ret)
+}
+
 type TokenType struct {
 	TokenType   string   `json:"tokenType"`
 	Name        string   `json:"name"`

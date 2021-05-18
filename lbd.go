@@ -16,13 +16,15 @@ import (
 )
 
 const (
-	CashewBaseURL = "https://test-api-blockchain.line.me"
+	CashewBaseURL = "https://test-api.blockchain.line.me"
+	DaphneBaseURL = "https://api.blockchain.line.me"
 )
 
 type Network string
 
 const (
 	Cashew Network = "Cashew"
+	Daphne Network = "Daphne"
 )
 
 var (
