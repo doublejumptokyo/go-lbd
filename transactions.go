@@ -2,6 +2,8 @@ package lbd
 
 import (
 	"encoding/json"
+	"fmt"
+	"strings"
 )
 
 func UnmarshalTransaction(data []byte) (*Transaction, error) {
@@ -81,4 +83,8 @@ func (l LBD) RetrieveTransactionInformation(txHash string) (*Transaction, error)
 		return nil, err
 	}
 	return UnmarshalTransaction(resp.ResponseData)
+}
+
+func (l LBD) GetExplorerURL(tx *Transaction) string {
+	return fmt.Sprintf("https://explorer.blockchain.line.me/%s/transaction/%s", strings.ToLower(string(l.Network)), tx.Txhash)
 }

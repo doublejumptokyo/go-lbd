@@ -41,6 +41,10 @@ const (
 	RequestTypeAOA                     = "aoa"
 )
 
+const (
+	DefaultLimit int = 50
+)
+
 type LBD struct {
 	Network   Network
 	baseURL   string
@@ -81,7 +85,7 @@ func (l LBD) IsAddress(s string) bool {
 
 func (l *LBD) Do(r Requester, sign bool) (*Response, error) {
 	ctx := context.TODO()
-	url := l.baseURL + r.Path()
+	url := l.baseURL + r.URI()
 
 	body, err := json.Marshal(r)
 	if err != nil {
@@ -131,7 +135,7 @@ func (l *LBD) Do(r Requester, sign bool) (*Response, error) {
 	}
 
 	if resp.StatusCode >= 400 {
-		return ret, fmt.Errorf("Backend returns status: %d msg: %s", ret.StatusCode, ret.StatusMessage)
+		return ret, fmt.Errorf("LBD: Backend returns status: %d msg: %s", ret.StatusCode, ret.StatusMessage)
 	}
 
 	return ret, nil
@@ -139,6 +143,7 @@ func (l *LBD) Do(r Requester, sign bool) (*Response, error) {
 
 type Requester interface {
 	Method() string
+	URI() string
 	Path() string
 	Nonce() string
 	Timestamp() string
@@ -150,10 +155,23 @@ type Request struct {
 	timestamp int64
 	method    string
 	path      string
+	pager     *Pager
+}
+
+type Pager struct {
+	Limit   int
+	Page    int
+	OrderBy string
 }
 
 func NewGetRequest(path string) *Request {
-	return NewRequest("GET", path)
+	req := NewRequest("GET", path)
+	req.pager = &Pager{
+		Limit:   DefaultLimit,
+		Page:    1,
+		OrderBy: "desc",
+	}
+	return req
 }
 
 func NewPostRequest(path string) *Request {
@@ -178,6 +196,14 @@ func (r *Request) Method() string {
 	return r.method
 }
 
+func (r *Request) URI() string {
+	if r.pager != nil {
+		return fmt.Sprintf("%s?limit=%d&orderBy=%s&page=%d", r.Path(), r.pager.Limit, r.pager.OrderBy, r.pager.Page)
+	}
+
+	return r.Path()
+}
+
 func (r *Request) Path() string {
 	return r.path
 }
@@ -191,7 +217,12 @@ func (r *Request) Timestamp() string {
 }
 
 func (r *Request) Encode() string {
-	return fmt.Sprintf("%s%s%s%s", r.Nonce(), r.Timestamp(), r.method, r.path)
+	ret := fmt.Sprintf("%s%s%s%s", r.Nonce(), r.Timestamp(), r.method, r.URI())
+
+	// if r.pager != nil {
+	// 	ret = fmt.Sprintf("%s?limit=%d&orderBy=%s&page=%d", ret, r.pager.Limit, r.pager.OrderBy, r.pager.Page)
+	// }
+	return ret
 }
 
 type Response struct {
