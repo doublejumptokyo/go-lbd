@@ -70,3 +70,38 @@ func (l *LBD) TransferBaseCoins(from *Wallet, to string, amount *big.Int) (*Tran
 	}
 	return UnmarshalTransaction(resp.ResponseData)
 }
+
+type TransferNonFungibleServiceWalletRequest struct {
+	*Request
+	WalletSecret string `json:"walletSecret"`
+	ToUserId     string `json:"toUserId,omitempty"`
+	ToAddress    string `json:"toAddress,omitempty"`
+}
+
+func (r TransferNonFungibleServiceWalletRequest) Encode() string {
+	base := r.Request.Encode()
+	if r.ToUserId != "" {
+		return fmt.Sprintf("%s?toUserId=%s&walletSecret=%s", base, r.WalletSecret, r.ToUserId)
+	}
+	return fmt.Sprintf("%s?toAddress=%s&walletSecret=%s", base, r.ToAddress, r.WalletSecret)
+}
+
+func (l *LBD) TransferNonFungibleServiceWallet(contractId, walletAddress, walletSecret, to, tokenType, tokenIndex string) (*Transaction, error) {
+	path := fmt.Sprintf("/v1/wallets/%s/item-tokens/%s/non-fungibles/%s/%s/transfer", walletAddress, contractId, tokenType, tokenIndex)
+	r := &TransferNonFungibleServiceWalletRequest{
+		Request:      NewPostRequest(path),
+		WalletSecret: walletSecret,
+	}
+
+	if l.IsAddress(to) {
+		r.ToAddress = to
+	} else {
+		r.ToUserId = to
+	}
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+	return UnmarshalTransaction(resp.ResponseData)
+}
