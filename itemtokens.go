@@ -50,7 +50,7 @@ func (l LBD) ListAllNonFungibles(contractId string) ([]*TokenType, error) {
 
 	all := []*TokenType{}
 	page := 1
-	for true {
+	for {
 		r := NewGetRequest(path)
 		r.pager.Page = page
 		r.pager.OrderBy = "asc"

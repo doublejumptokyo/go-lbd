@@ -22,7 +22,7 @@ type ServiceToken struct {
 }
 
 func (l *LBD) ListAllServiceTokens() ([]*ServiceToken, error) {
-	path := fmt.Sprintf("/v1/service-tokens")
+	path := "/v1/service-tokens"
 	r := NewGetRequest(path)
 	resp, err := l.Do(r, true)
 	if err != nil {

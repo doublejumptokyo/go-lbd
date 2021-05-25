@@ -69,5 +69,4 @@ func onlyTxMode(t *testing.T) {
 	if !(os.Getenv("TX") == "1") {
 		t.Skip("skipping test in no Tx mode. Set env TX=1")
 	}
-	return
 }

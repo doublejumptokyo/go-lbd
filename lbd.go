@@ -38,7 +38,7 @@ type RequestType string
 
 const (
 	RequestTypeRedirectUri RequestType = "redirectUri"
-	RequestTypeAOA                     = "aoa"
+	RequestTypeAOA         RequestType = "aoa"
 )
 
 const (
@@ -69,7 +69,7 @@ func NewLBD(apiKey string, secret string, owner *Wallet) (*LBD, error) {
 func (l LBD) Sign(r Requester) string {
 	msg := r.Encode()
 	mac := hmac.New(sha512.New, []byte(l.apiSecret))
-	mac.Write([]byte(msg))
+	_, _ = mac.Write([]byte(msg))
 	sig := mac.Sum(nil)
 
 	return base64.StdEncoding.EncodeToString(sig)

@@ -18,7 +18,7 @@ func (r MemosRequest) Encode() string {
 }
 
 func (l *LBD) SaveText(memo string) (*Transaction, error) {
-	path := fmt.Sprintf("/v1/memos")
+	path := "/v1/memos"
 	r := &MemosRequest{
 		Request:       NewPostRequest(path),
 		WalletAddress: l.Owner.Address,

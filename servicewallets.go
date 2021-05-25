@@ -21,7 +21,7 @@ func NewWallet(address, secret string) *Wallet {
 }
 
 func (l LBD) ListAllServiceWallets() ([]*Wallet, error) {
-	path := fmt.Sprintf("/v1/wallets")
+	path := "/v1/wallets"
 	r := NewGetRequest(path)
 	resp, err := l.Do(r, true)
 	if err != nil {
