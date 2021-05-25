@@ -35,6 +35,45 @@ func (l LBD) RetrieveUserWalletTransactionHistory(userId string) ([]*Transaction
 	return ret, json.Unmarshal(data.ResponseData, &ret)
 }
 
+type NonFungibleToken struct {
+	Name          string `json:"name"`
+	TokenType     string `json:"tokenType"`
+	Meta          string `json:"meta"`
+	NumberOfIndex string `json:"numberOfIndex"`
+}
+
+func (l LBD) RetrieveBalanceOfAllNonFungiblesUserWallet(userId, contractId string) ([]*NonFungibleToken, error) {
+	path := fmt.Sprintf("/v1/users/%s/item-tokens/%s/non-fungibles", userId, contractId)
+
+	all := []*NonFungibleToken{}
+	page := 1
+	for {
+		r := NewGetRequest(path)
+		r.pager.Page = page
+		r.pager.OrderBy = "asc"
+		resp, err := l.Do(r, true)
+		if err != nil {
+			return nil, err
+		}
+		ret := []*NonFungibleToken{}
+		err = json.Unmarshal(resp.ResponseData, &ret)
+		if err != nil {
+			return nil, err
+		}
+		if len(ret) == 0 {
+			break
+		}
+		all = append(all, ret...)
+		page++
+	}
+	return all, nil
+}
+
+type SessionToken struct {
+	RequestSessionToken string `json:"requestSessionToken"`
+	RedirectURI         string `json:"redirectUri"`
+}
+
 func UnmarshalSessionToken(data []byte) (*SessionToken, error) {
 	r := new(SessionToken)
 	err := json.Unmarshal(data, r)
@@ -43,11 +82,6 @@ func UnmarshalSessionToken(data []byte) (*SessionToken, error) {
 
 func (r *SessionToken) Marshal() ([]byte, error) {
 	return json.Marshal(r)
-}
-
-type SessionToken struct {
-	RequestSessionToken string `json:"requestSessionToken"`
-	RedirectURI         string `json:"redirectUri"`
 }
 
 type IssueSessionTokenForBaseCoinTransferRequest struct {
@@ -157,8 +191,8 @@ type SessionTokenStatus string
 
 const (
 	SessionTokenStatusUnknown      SessionTokenStatus = "Unknown"
-	SessionTokenStatusAuthorized                      = "Authorized"
-	SessionTokenStatusUnauthorized                    = "Unauthorized"
+	SessionTokenStatusAuthorized   SessionTokenStatus = "Authorized"
+	SessionTokenStatusUnauthorized SessionTokenStatus = "Unauthorized"
 )
 
 func (l LBD) RetrieveSessionTokenStatus(requestSessionToken string) (SessionTokenStatus, error) {
