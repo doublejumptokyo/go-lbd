@@ -35,15 +35,53 @@ func (l LBD) RetrieveUserWalletTransactionHistory(userId string) ([]*Transaction
 	return ret, json.Unmarshal(data.ResponseData, &ret)
 }
 
-type NonFungibleToken struct {
+type NonFungible struct {
 	Name          string `json:"name"`
 	TokenType     string `json:"tokenType"`
 	Meta          string `json:"meta"`
 	NumberOfIndex string `json:"numberOfIndex"`
 }
 
-func (l LBD) RetrieveBalanceOfAllNonFungiblesUserWallet(userId, contractId string) ([]*NonFungibleToken, error) {
+func (l LBD) RetrieveBalanceOfAllNonFungiblesUserWallet(userId, contractId string) ([]*NonFungible, error) {
 	path := fmt.Sprintf("/v1/users/%s/item-tokens/%s/non-fungibles", userId, contractId)
+
+	all := []*NonFungible{}
+	page := 1
+	for {
+		r := NewGetRequest(path)
+		r.pager.Page = page
+		r.pager.OrderBy = "asc"
+		resp, err := l.Do(r, true)
+		if err != nil {
+			return nil, err
+		}
+		ret := []*NonFungible{}
+		err = json.Unmarshal(resp.ResponseData, &ret)
+		if err != nil {
+			return nil, err
+		}
+		if len(ret) == 0 {
+			break
+		}
+		all = append(all, ret...)
+		page++
+	}
+	return all, nil
+}
+
+type NonFungibleToken struct {
+	Name       string `json:"name"`
+	TokenType  string `json:"tokenType"`
+	TokenIndex string `json:"tokenIndex"`
+	Meta       string `json:"meta"`
+}
+
+func (n *NonFungibleToken) ID() string {
+	return fmt.Sprintf("%s%08s", n.TokenType, n.TokenIndex)
+}
+
+func (l LBD) RetrieveBalanceOfSpecificTypeOfNonFungiblesUserWallet(userId, contractId, tokenType string) ([]*NonFungibleToken, error) {
+	path := fmt.Sprintf("/v1/users/%s/item-tokens/%s/non-fungibles/%s", userId, contractId, tokenType)
 
 	all := []*NonFungibleToken{}
 	page := 1
@@ -65,6 +103,10 @@ func (l LBD) RetrieveBalanceOfAllNonFungiblesUserWallet(userId, contractId strin
 		}
 		all = append(all, ret...)
 		page++
+	}
+
+	for _, t := range all {
+		t.TokenType = tokenType
 	}
 	return all, nil
 }
