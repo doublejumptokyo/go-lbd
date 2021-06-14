@@ -19,12 +19,20 @@ type Transaction struct {
 	Height    int64  `json:"height"`
 	Txhash    string `json:"txhash"`
 	Index     int64  `json:"index"`
+	Codespace string `json:"codespace"`
 	Code      int64  `json:"code"`
 	Logs      []Log  `json:"logs"`
 	GasWanted int64  `json:"gasWanted"`
 	GasUsed   int64  `json:"gasUsed"`
 	Tx        Tx     `json:"tx"`
 	Timestamp string `json:"timestamp"`
+}
+
+func (t *Transaction) Check() (err error) {
+	if t.Code == 0 {
+		return nil
+	}
+	return fmt.Errorf("Transaction failure %s %d", t.Codespace, t.Code)
 }
 
 type Log struct {
