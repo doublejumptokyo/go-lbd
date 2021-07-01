@@ -155,6 +155,39 @@ func (l *LBD) RetrieveNonFungibleInformation(contractId, tokenType, tokenIndex s
 	return ret, json.Unmarshal(resp.ResponseData, ret)
 }
 
+type Holder struct {
+	WalletAddress *string `json:"walletAddress"`
+	UserID        *string `json:"userId"`
+	NumberOfIndex string  `json:"numberOfIndex"`
+}
+
+func (l LBD) RetrieveHolderOfSpecificNonFungible(contractId, tokenType string) ([]*Holder, error) {
+	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/%s/holders", contractId, tokenType)
+
+	all := []*Holder{}
+	page := 1
+	for {
+		r := NewGetRequest(path)
+		r.pager.Page = page
+		r.pager.OrderBy = "asc"
+		resp, err := l.Do(r, true)
+		if err != nil {
+			return nil, err
+		}
+		ret := []*Holder{}
+		err = json.Unmarshal(resp.ResponseData, &ret)
+		if err != nil {
+			return nil, err
+		}
+		all = append(all, ret...)
+		page++
+		if len(ret) < r.pager.Limit {
+			break
+		}
+	}
+	return all, nil
+}
+
 type MintNonFungibleRequest struct {
 	*Request
 	OwnerAddress string `json:"ownerAddress"`

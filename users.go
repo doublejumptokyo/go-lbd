@@ -98,11 +98,11 @@ func (l LBD) RetrieveBalanceOfSpecificTypeOfNonFungiblesUserWallet(userId, contr
 		if err != nil {
 			return nil, err
 		}
-		if len(ret) == 0 {
-			break
-		}
 		all = append(all, ret...)
 		page++
+		if len(ret) < r.pager.Limit {
+			break
+		}
 	}
 
 	for _, t := range all {
