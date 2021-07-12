@@ -25,7 +25,7 @@ type Transaction struct {
 	GasWanted int64  `json:"gasWanted"`
 	GasUsed   int64  `json:"gasUsed"`
 	Tx        Tx     `json:"tx"`
-	Timestamp string `json:"timestamp"`
+	Timestamp int64  `json:"timestamp"`
 }
 
 func (t *Transaction) Check() (err error) {
