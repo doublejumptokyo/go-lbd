@@ -54,10 +54,10 @@ type LBD struct {
 	Debug     bool
 }
 
-func NewCashew(apiKey string, secret string, owner *Wallet) (*LBD, error) {
+func NewLBD(network Network, url string, apiKey string, secret string, owner *Wallet) (*LBD, error) {
 	l := &LBD{
-		Network:   Cashew,
-		baseURL:   CashewBaseURL,
+		Network:   network,
+		baseURL:   url,
 		apiKey:    apiKey,
 		apiSecret: secret,
 		Owner:     owner,
@@ -66,16 +66,26 @@ func NewCashew(apiKey string, secret string, owner *Wallet) (*LBD, error) {
 	return l, nil
 }
 
+func NewCashew(apiKey string, secret string, owner *Wallet) (*LBD, error) {
+	l, err := NewLBD(
+		Cashew,
+		CashewBaseURL,
+		apiKey,
+		secret,
+		owner,
+	)
+	return l, err
+}
+
 func NewDaphne(apiKey string, secret string, owner *Wallet) (*LBD, error) {
-	l := &LBD{
-		Network:   Daphne,
-		baseURL:   DaphneBaseURL,
-		apiKey:    apiKey,
-		apiSecret: secret,
-		Owner:     owner,
-		Debug:     false,
-	}
-	return l, nil
+	l, err := NewLBD(
+		Daphne,
+		DaphneBaseURL,
+		apiKey,
+		secret,
+		owner,
+	)
+	return l, err
 }
 
 func (l LBD) Sign(r Requester) string {
