@@ -26,7 +26,7 @@ func TestSign(t *testing.T) {
 	nonce := "Bp0IqgXE"
 	timestamp := int64(1581850266351)
 
-	l, err := NewLBD(key, secret, nil)
+	l, err := NewCashew(key, secret, nil)
 	assert.Nil(err)
 
 	// Example 1
@@ -51,7 +51,7 @@ func TestSign(t *testing.T) {
 
 func TestMain(m *testing.M) {
 	var err error
-	l, err = NewLBD(os.Getenv("API_KEY"), os.Getenv("API_SECRET"), owner)
+	l, err = NewCashew(os.Getenv("API_KEY"), os.Getenv("API_SECRET"), owner)
 	if err != nil {
 		panic(err)
 	}
