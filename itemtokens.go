@@ -155,6 +155,7 @@ func (l *LBD) RetrieveNonFungibleInformation(contractId, tokenType, tokenIndex s
 	return ret, json.Unmarshal(resp.ResponseData, ret)
 }
 
+// Holders Response Struct
 type Holder struct {
 	WalletAddress *string `json:"walletAddress"`
 	UserID        *string `json:"userId"`
@@ -186,6 +187,25 @@ func (l LBD) RetrieveHolderOfSpecificNonFungible(contractId, tokenType string) (
 		}
 	}
 	return all, nil
+}
+
+type ItemTokenHolder struct {
+	WalletAddress *string `json:"walletAddress"`
+	UserID        *string `json:"userId"`
+	TokenID       *string `json:"tokenId"`
+	Amount        string  `json:"amount"`
+}
+
+func (l LBD) RetrieveTheHolderOfSpecificNonFungible(contractId, tokenType, tokenIndex string) (*ItemTokenHolder, error) {
+	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/%s/%s/holder", contractId, tokenType, tokenIndex)
+
+	r := NewGetRequest(path)
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+	ret := new(ItemTokenHolder)
+	return ret, json.Unmarshal(resp.ResponseData, ret)
 }
 
 type MintNonFungibleRequest struct {
