@@ -39,3 +39,10 @@ func TestUpdateNonFungibleInformation(t *testing.T) {
 	assert.Nil(t, err)
 	t.Log(ret)
 }
+
+func TestRetrieveTheHolderOfSpecificNonFungible(t *testing.T) {
+	onlyTxMode(t)
+	ret, err := l.RetrieveTheHolderOfSpecificNonFungible(itemTokenContractId, tokenType, "00000001")
+	assert.Nil(t, err)
+	t.Log(ret)
+}
