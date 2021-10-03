@@ -285,7 +285,6 @@ func (r MintMultipleNonFungibleRequest) Encode() string {
 		return fmt.Sprintf("%s?%s&ownerAddress=%s&ownerSecret=%s&toUserId=%s", base, mintList, r.OwnerAddress, r.OwnerSecret, r.ToUserId)
 	}
 	ret := fmt.Sprintf("%s?%s&ownerAddress=%s&ownerSecret=%s&toAddress=%s", base, mintList, r.OwnerAddress, r.OwnerSecret, r.ToAddress)
-	fmt.Println(ret)
 	return ret
 }
 
