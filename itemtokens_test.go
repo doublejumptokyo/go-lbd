@@ -35,8 +35,27 @@ func TestMintNonFungible(t *testing.T) {
 
 func TestUpdateNonFungibleInformation(t *testing.T) {
 	onlyTxMode(t)
-	ret, err := l.UpdateNonFungibleInformation(itemTokenContractId, tokenType, "00000001", "aaa", "")
-	assert.Nil(t, err)
+	m := NewMeta()
+	err := m.Set("Name", "aaa")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = m.Set("Attack", "100")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	meta, err := m.MarshalJSONString()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ret, err := l.UpdateNonFungibleInformation(itemTokenContractId, "10000002", "00000002", "ナポレオン", meta)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	t.Log(ret)
 }
 
