@@ -159,14 +159,15 @@ type NonFungibleTokenType struct {
 	Meta         string `json:"meta"`
 }
 
-func (l *LBD) RetrieveNonFungibleTokenType(contractId, tokenType string) ([]byte, error) {
+func (l *LBD) RetrieveNonFungibleTokenType(contractId, tokenType string) (*TokenType, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/%s", contractId, tokenType)
 	r := NewGetRequest(path)
 	resp, err := l.Do(r, true)
 	if err != nil {
 		return nil, err
 	}
-	return resp.ResponseData, nil
+	ret := new(TokenType)
+	return ret, json.Unmarshal(resp.ResponseData, ret)
 }
 
 type NonFungibleInformation struct {
