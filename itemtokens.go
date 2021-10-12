@@ -6,6 +6,39 @@ import (
 	"strings"
 )
 
+type Meta struct {
+	data map[string]string
+}
+
+func NewMeta() *Meta {
+	return &Meta{
+		data: map[string]string{},
+	}
+}
+
+func (m *Meta) Set(key, value string) (err error) {
+	if len(key) < 1 && 15 < len(key) {
+		return fmt.Errorf("Invalid key length")
+	}
+	if len(value) < 1 && 15 < len(value) {
+		return fmt.Errorf("Invalid value length")
+	}
+	m.data[key] = value
+	return nil
+}
+
+func (m *Meta) MarshalJSON() ([]byte, error) {
+	return json.Marshal(m.data)
+}
+
+func (m *Meta) MarshalJSONString() (string, error) {
+	b, err := m.MarshalJSON()
+	if err != nil {
+		return "", err
+	}
+	return string(b), nil
+}
+
 type ItemTokenContractInformation struct {
 	ContractID   string `json:"contractId"`
 	BaseImgURI   string `json:"baseImgUri"`
