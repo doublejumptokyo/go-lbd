@@ -31,12 +31,9 @@ func (m *Meta) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m.data)
 }
 
-func (m *Meta) MarshalJSONString() (string, error) {
-	b, err := m.MarshalJSON()
-	if err != nil {
-		return "", err
-	}
-	return string(b), nil
+func (m *Meta) String() string {
+	b, _ := m.MarshalJSON()
+	return string(b)
 }
 
 type ItemTokenContractInformation struct {
