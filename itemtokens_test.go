@@ -36,20 +36,20 @@ func TestMintNonFungible(t *testing.T) {
 func TestUpdateNonFungibleInformation(t *testing.T) {
 	onlyTxMode(t)
 	m := NewMeta()
-	err := m.Set("Name", "aaa")
+
+	err := m.Set("Name", "ナポレオン")
 	if err != nil {
 		t.Fatal(err)
 	}
-
 	err = m.Set("Attack", "100")
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	meta, err := m.MarshalJSONString()
+	err = m.Set("干支", "🐍")
 	if err != nil {
 		t.Fatal(err)
 	}
+	meta := m.String()
 
 	ret, err := l.UpdateNonFungibleInformation(itemTokenContractId, "10000002", "00000002", "ナポレオン", meta)
 	if err != nil {
