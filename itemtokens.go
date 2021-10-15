@@ -375,3 +375,46 @@ func (l *LBD) UpdateNonFungibleInformation(contractId, tokenType, tokenIndex, na
 	}
 	return UnmarshalTransaction(resp.ResponseData)
 }
+
+type UpdateMultipleFungibleTokenIconsRequest struct {
+	*Request
+	UpdateList []*UpdateList `json:"updateList"`
+}
+
+type UpdateList struct {
+	TokenType  string `json:"tokenType"`
+	TokenIndex string `json:"tokenIndex"`
+}
+
+func (r UpdateMultipleFungibleTokenIconsRequest) Encode() string {
+	base := r.Request.Encode()
+	types := make([]string, len(r.UpdateList))
+	indexes := make([]string, len(r.UpdateList))
+
+	for i, m := range r.UpdateList {
+		types[i] = m.TokenType
+		indexes[i] = m.TokenIndex
+	}
+	updateList := fmt.Sprintf("updateList.tokenIndex=%s&updateList.tokenType=%s",
+		strings.Join(indexes, ","),
+		strings.Join(types, ","),
+	)
+
+	ret := fmt.Sprintf("%s?%s", base, updateList)
+	return ret
+}
+
+func (l *LBD) UpdateMultipleFungibleTokenIcons(contactId string, updateList []*UpdateList) (*Transaction, error) {
+	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/icon", contactId)
+
+	r := UpdateMultipleFungibleTokenIconsRequest{
+		Request:    NewPutRequest(path),
+		UpdateList: updateList,
+	}
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+	return UnmarshalTransaction(resp.ResponseData)
+}

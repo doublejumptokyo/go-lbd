@@ -65,3 +65,16 @@ func TestRetrieveTheHolderOfSpecificNonFungible(t *testing.T) {
 	assert.Nil(t, err)
 	t.Log(ret)
 }
+
+func TestUpdateMultipleFungibleTokenIcons(t *testing.T) {
+	onlyTxMode(t)
+	updateList := []*UpdateList{
+		{
+			TokenType:  "10000002",
+			TokenIndex: "000004c7",
+		},
+	}
+	ret, err := l.UpdateMultipleFungibleTokenIcons(itemTokenContractId, updateList)
+	assert.Nil(t, err)
+	t.Log(ret)
+}
