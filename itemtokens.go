@@ -31,6 +31,11 @@ func (m *Meta) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m.data)
 }
 
+func UnmarshalMeta(data []byte) (*Meta, error) {
+	m := new(Meta)
+	return m, json.Unmarshal(data, &m.data)
+}
+
 func (m *Meta) String() string {
 	b, _ := m.MarshalJSON()
 	return string(b)
@@ -156,9 +161,18 @@ type NonFungibleTokenType struct {
 	Meta         string `json:"meta"`
 }
 
-func (l *LBD) RetrieveNonFungibleTokenType(contractId, tokenType string) (*TokenType, error) {
+func (l *LBD) RetrieveNonFungibleTokenType(contractId, tokenType string, pager *Pager) (*TokenType, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/%s", contractId, tokenType)
+	if pager == nil {
+		pager = &Pager{
+			Limit:   10,
+			Page:    1,
+			OrderBy: "desc",
+		}
+	}
+
 	r := NewGetRequest(path)
+	r.pager = pager
 	resp, err := l.Do(r, true)
 	if err != nil {
 		return nil, err

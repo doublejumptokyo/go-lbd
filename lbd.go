@@ -117,7 +117,7 @@ func (l *LBD) Do(r Requester, sign bool) (*Response, error) {
 		body = nil
 	}
 
-	client := new(http.Client)
+	client := newClient()
 	req, err := http.NewRequestWithContext(ctx, r.Method(), url, bytes.NewReader(body))
 	if err != nil {
 		return nil, err
@@ -161,6 +161,10 @@ func (l *LBD) Do(r Requester, sign bool) (*Response, error) {
 	}
 
 	return ret, nil
+}
+
+func newClient() *http.Client {
+	return new(http.Client)
 }
 
 type Requester interface {
