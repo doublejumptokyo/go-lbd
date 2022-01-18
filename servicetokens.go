@@ -124,7 +124,7 @@ func (l *LBD) BurnServiceToken(contractId, from string, amount *big.Int) (*Trans
 	r := BurnServiceTokenRequest{
 		Request:      NewPostRequest(path),
 		OwnerAddress: l.Owner.Address,
-		OwnerSecret:  l.Owner.Address,
+		OwnerSecret:  l.Owner.Secret,
 		Amount:       amount.String(),
 	}
 
