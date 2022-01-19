@@ -1,6 +1,7 @@
 package lbd
 
 import (
+	"math/big"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -167,6 +168,64 @@ func TestAttachNonFungibleAnother(t *testing.T) {
 func TestDetachNonFungibleParent(t *testing.T) {
 	onlyTxMode(t)
 	ret, err := l.DetachNonFungibleParent(itemTokenContractId, tokenType, "00000001")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(ret)
+}
+
+func TestIssueFungible(t *testing.T) {
+	onlyTxMode(t)
+	ret, err := l.IssueFungible(itemTokenContractId, name, meta)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(ret)
+}
+
+func TestMintFungible(t *testing.T) {
+	onlyTxMode(t)
+	ret, err := l.MintFungible(itemTokenContractId, tokenType, toAddress, big.NewInt(1000))
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(ret)
+}
+
+func TestBurnFungible(t *testing.T) {
+	onlyTxMode(t)
+	ret, err := l.BurnFungible(itemTokenContractId, tokenType, toAddress, big.NewInt(1000))
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(ret)
+}
+
+func TestMintMultipleNonFungibleResipients(t *testing.T) {
+	mintList := []*MintList{}
+
+	onlyTxMode(t)
+	ret, err := l.MintMultipleNonFungibleResipients(itemTokenContractId, toAddress, mintList)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(ret)
+}
+
+func TestMintMultipleNonFungible(t *testing.T) {
+	mintList := []*MintList{}
+
+	onlyTxMode(t)
+	ret, err := l.MintMultipleNonFungible(itemTokenContractId, toAddress, mintList)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(ret)
+}
+
+func TestBurnNonFungible(t *testing.T) {
+	onlyTxMode(t)
+	ret, err := l.BurnNonFungible(itemTokenContractId, tokenType, "00000001", toAddress)
 	if err != nil {
 		t.Fatal(err)
 	}
