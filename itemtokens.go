@@ -597,7 +597,7 @@ func (r UpdateMultipleFungibleTokenIconsRequest) Encode() string {
 	return ret
 }
 
-func (l *LBD) UpdateMultipleFungibleTokenIcons(contactId string, updateList []*UpdateList) (*Transaction, error) {
+func (l *LBD) UpdateMultipleNonFungibleTokenIcons(contactId string, updateList []*UpdateList) (*Transaction, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/icon", contactId)
 
 	r := UpdateMultipleFungibleTokenIconsRequest{
@@ -609,5 +609,100 @@ func (l *LBD) UpdateMultipleFungibleTokenIcons(contactId string, updateList []*U
 	if err != nil {
 		return nil, err
 	}
+	return UnmarshalTransaction(resp.ResponseData)
+}
+
+func (l *LBD) UpdateMultipleFungibleTokenIcons(contactId string, updateList []*UpdateList) (*Transaction, error) {
+	path := fmt.Sprintf("/v1/item-tokens/%s/fungibles/icon", contactId)
+
+	r := UpdateMultipleFungibleTokenIconsRequest{
+		Request:    NewPutRequest(path),
+		UpdateList: updateList,
+	}
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+	return UnmarshalTransaction(resp.ResponseData)
+}
+
+type UpdateFungibleInformationRequest struct {
+	*Request
+	OwnerAddress string `json:"ownerAddress"`
+	OwnerSecret  string `json:"ownerSecret"`
+	Name         string `json:"name"`
+	Meta         string `json:"meta,omitempty"`
+}
+
+func (l LBD) UpdateFungibleInformation(contractId, tokenType, name, meta string) (*Transaction, error) {
+	path := fmt.Sprintf("/v1/item-tokens/%s/fungibles/%s", contractId, tokenType)
+
+	r := UpdateFungibleInformationRequest{
+		Request:      NewPutRequest(path),
+		OwnerAddress: l.Owner.Address,
+		OwnerSecret:  l.Owner.Secret,
+		Name:         name,
+		Meta:         meta,
+	}
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+	return UnmarshalTransaction(resp.ResponseData)
+}
+
+type AttachNonFungibleRequest struct {
+	*Request
+	ParentTokenId        string `json:"parentTokenId"`
+	ServiceWalletAddress string `json:"serviceWalletAddress"`
+	ServiceWalletSecret  string `json:"serviceWalletSecret"`
+	TokenHolderAddress   string `json:"tokenHolderAddress"`
+	TokenHolderUserId    string `json:"tokenHolderUserId"`
+}
+
+func (l LBD) AttachNonFungibleAnother(contractId, tokenType, tokenIndex, tokenId string) (*Transaction, error) {
+	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/%s/%s/parent", contractId, tokenType, tokenIndex)
+
+	r := AttachNonFungibleRequest{
+		Request:              NewPostRequest(path),
+		ParentTokenId:        tokenId,
+		ServiceWalletAddress: l.Owner.Address,
+		ServiceWalletSecret:  l.Owner.Secret,
+		TokenHolderAddress:   l.Owner.Address,
+	}
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+
+	return UnmarshalTransaction(resp.ResponseData)
+}
+
+type DetachNonFungibleParentRequest struct {
+	*Request
+	ServiceWalletAddress string `json:"serviceWalletAddress"`
+	ServiceWalletSecret  string `json:"serviceWalletSecret"`
+	TokenHolderAddress   string `json:"tokenHolderAddress"`
+	TokenHolderUserId    string `json:"tokenHolderUserId"`
+}
+
+func (l LBD) DetachNonFungibleParent(contractId, tokenType, tokenIndex string) (*Transaction, error) {
+	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/%s/%s/parent", contractId, tokenType, tokenIndex)
+
+	r := DetachNonFungibleParentRequest{
+		Request:              NewDeleteRequest(path),
+		ServiceWalletAddress: l.Owner.Address,
+		ServiceWalletSecret:  l.Owner.Secret,
+		TokenHolderAddress:   l.Owner.Address,
+	}
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+
 	return UnmarshalTransaction(resp.ResponseData)
 }

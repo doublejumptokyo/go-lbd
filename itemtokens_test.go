@@ -121,7 +121,7 @@ func TestRetrieveTheStatusOfMultipleNonFungibleTokenIcons(t *testing.T) {
 	t.Log(ret)
 }
 
-func TestUpdateMultipleFungibleTokenIcons(t *testing.T) {
+func TestUpdateMultipleNonFungibleTokenIcons(t *testing.T) {
 	onlyTxMode(t)
 	updateList := []*UpdateList{
 		{
@@ -129,7 +129,46 @@ func TestUpdateMultipleFungibleTokenIcons(t *testing.T) {
 			TokenIndex: "000004c7",
 		},
 	}
+	ret, err := l.UpdateMultipleNonFungibleTokenIcons(itemTokenContractId, updateList)
+	assert.Nil(t, err)
+	t.Log(ret)
+}
+
+func TestUpdateMultipleFungibleTokenIcons(t *testing.T) {
+	onlyTxMode(t)
+	updateList := []*UpdateList{
+		{
+			TokenType: "10000002",
+		},
+	}
 	ret, err := l.UpdateMultipleFungibleTokenIcons(itemTokenContractId, updateList)
 	assert.Nil(t, err)
+	t.Log(ret)
+}
+
+func TestUpdateFungibleInformation(t *testing.T) {
+	onlyTxMode(t)
+	ret, err := l.UpdateFungibleInformation(itemTokenContractId, tokenType, name, meta)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(ret)
+}
+
+func TestAttachNonFungibleAnother(t *testing.T) {
+	onlyTxMode(t)
+	ret, err := l.AttachNonFungibleAnother(itemTokenContractId, tokenType, "00000001", "000000")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(ret)
+}
+
+func TestDetachNonFungibleParent(t *testing.T) {
+	onlyTxMode(t)
+	ret, err := l.DetachNonFungibleParent(itemTokenContractId, tokenType, "00000001")
+	if err != nil {
+		t.Fatal(err)
+	}
 	t.Log(ret)
 }
