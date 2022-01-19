@@ -328,3 +328,91 @@ func (l *LBD) RetrieveBalanceSpecificNonFungible(walletAddress, contractId, toke
 	ret := new(RetrieveBalanceNonFungibles)
 	return ret, json.Unmarshal(resp.ResponseData, ret)
 }
+
+// Transfer
+
+type TransferRequest struct {
+	*Request
+	WalletSecret string `json:"walletSecret"`
+	ToUserId     string `json:"toUserId,omitempty"`
+	ToAddress    string `json:"toAddress,omitempty"`
+	Amount       string `json:"amount"`
+}
+
+func (l *LBD) TransferServiceTokens(from *Wallet, contractId, to string, amount *big.Int) (*Transaction, error) {
+	path := fmt.Sprintf("/v1/wallets/%s/service-tokens/%s/transfer", from.Address, contractId)
+
+	r := TransferRequest{
+		Request:      NewPostRequest(path),
+		WalletSecret: from.Secret,
+		Amount:       amount.String(),
+	}
+
+	if l.IsAddress(to) {
+		r.ToAddress = to
+	} else {
+		r.ToUserId = to
+	}
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+	return UnmarshalTransaction(resp.ResponseData)
+}
+
+func (l *LBD) TransferFungible(from *Wallet, contractId, to, tokenType string, amount *big.Int) (*Transaction, error) {
+	path := fmt.Sprintf("/v1/wallets/%s/item-tokens/%s/fungibles/%s/transfer", from.Address, contractId, tokenType)
+
+	r := TransferRequest{
+		Request:      NewPostRequest(path),
+		WalletSecret: from.Secret,
+		Amount:       amount.String(),
+	}
+
+	if l.IsAddress(to) {
+		r.ToAddress = to
+	} else {
+		r.ToUserId = to
+	}
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+	return UnmarshalTransaction(resp.ResponseData)
+}
+
+type TransferList struct {
+	TokenId string `json:"tokenId"`
+}
+
+type BatchTransferNonFungibleRequest struct {
+	*Request
+	WalletSecret string `json:"walletSecret"`
+	ToUserId     string `json:"toUserId,omitempty"`
+	ToAddress    string `json:"toAddress,omitempty"`
+	TransferList []*TransferList
+}
+
+func (l *LBD) BatchTransferNonFungible(from *Wallet, contractId, to string, transferList []*TransferList) (*Transaction, error) {
+	path := fmt.Sprintf("/v1/wallets/%s/item-tokens/%s/non-fungibles/batch-transfer", from.Address, contractId)
+
+	r := BatchTransferNonFungibleRequest{
+		Request:      NewPostRequest(path),
+		WalletSecret: from.Secret,
+		TransferList: transferList,
+	}
+
+	if l.IsAddress(to) {
+		r.ToAddress = to
+	} else {
+		r.ToUserId = to
+	}
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+	return UnmarshalTransaction(resp.ResponseData)
+}

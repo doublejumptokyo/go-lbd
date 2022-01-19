@@ -81,3 +81,33 @@ func TestRetrieveBalanceSpecificNonFungible(t *testing.T) {
 	assert.Nil(t, err)
 	t.Log(ret)
 }
+
+// Transfer
+func TestTransferServiceTokens(t *testing.T) {
+	onlyTxMode(t)
+	ret, err := l.TransferServiceTokens(owner, serviceTokenContractId, toAddress, big.NewInt(1000))
+	assert.Nil(t, err)
+	t.Log(ret)
+}
+
+func TestTransferFungible(t *testing.T) {
+	onlyTxMode(t)
+	ret, err := l.TransferFungible(owner, serviceTokenContractId, toAddress, tokenType, big.NewInt(1000))
+	assert.Nil(t, err)
+	t.Log(ret)
+}
+
+func TestBatchTransferNonFungible(t *testing.T) {
+	onlyTxMode(t)
+	transferList := []*TransferList{
+		{
+			TokenId: "1000000100000001",
+		},
+		{
+			TokenId: "1000000200000002",
+		},
+	}
+	ret, err := l.BatchTransferNonFungible(owner, itemTokenContractId, toAddress, transferList)
+	assert.Nil(t, err)
+	t.Log(ret)
+}
