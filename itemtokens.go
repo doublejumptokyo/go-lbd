@@ -80,6 +80,87 @@ type Token struct {
 	BurnedAt   int64  `json:"burnedAt"`
 }
 
+func (l LBD) ListAllFungibles(contractId string) ([]*TokenType, error) {
+	path := fmt.Sprintf("/v1/item-tokens/%s/fungibles", contractId)
+
+	all := []*TokenType{}
+	page := 1
+	for {
+		r := NewGetRequest(path)
+		r.pager.Page = page
+		r.pager.OrderBy = "asc"
+		resp, err := l.Do(r, true)
+		if err != nil {
+			return nil, err
+		}
+		ret := []*TokenType{}
+		err = json.Unmarshal(resp.ResponseData, &ret)
+		if err != nil {
+			return nil, err
+		}
+		if len(ret) == 0 {
+			break
+		}
+		all = append(all, ret...)
+		page++
+	}
+	return all, nil
+}
+
+type FungibleInformation struct {
+	TokenType   string `json:"tokenType"`
+	Name        string `json:"name"`
+	Meta        string `json:"meta"`
+	CreatedAt   int64  `json:"createdAt"`
+	TotalSupply string `json:"totalSupply"`
+	TotalMint   string `json:"totalMint"`
+	TotalBurn   string `json:"totalBurn"`
+}
+
+func (l LBD) RetrieveFungibleInformation(contractId, tokenType string) (*FungibleInformation, error) {
+	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/%s", contractId, tokenType)
+	r := NewGetRequest(path)
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+	ret := new(FungibleInformation)
+	return ret, json.Unmarshal(resp.ResponseData, ret)
+}
+
+type FungibleHolers struct {
+	WalletAddress *string `json:"walletAddress"`
+	UserID        *string `json:"userId"`
+	Amount        string  `json:"amount"`
+}
+
+func (l LBD) RetrieveAllFungibleHolders(contractId, tokenType string) ([]*FungibleHolers, error) {
+	path := fmt.Sprintf(" /v1/item-tokens/%s/fungibles/%s/holders", contractId, tokenType)
+
+	all := []*FungibleHolers{}
+	page := 1
+	for {
+		r := NewGetRequest(path)
+		r.pager.Page = page
+		r.pager.OrderBy = "asc"
+		resp, err := l.Do(r, true)
+		if err != nil {
+			return nil, err
+		}
+		ret := []*FungibleHolers{}
+		err = json.Unmarshal(resp.ResponseData, &ret)
+		if err != nil {
+			return nil, err
+		}
+		if len(ret) == 0 {
+			break
+		}
+		all = append(all, ret...)
+		page++
+	}
+	return all, nil
+}
+
 func (l LBD) ListAllNonFungibles(contractId string) ([]*TokenType, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles", contractId)
 
@@ -250,6 +331,104 @@ func (l LBD) RetrieveTheHolderOfSpecificNonFungible(contractId, tokenType, token
 		return nil, err
 	}
 	ret := new(ItemTokenHolder)
+	return ret, json.Unmarshal(resp.ResponseData, ret)
+}
+
+func (l LBD) ListTheChildrenOfNonFungible(contractId, tokenType, tokenIndex string) ([]*NonFungibleInformation, error) {
+	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/%s/%s/children", contractId, tokenType, tokenIndex)
+
+	all := []*NonFungibleInformation{}
+	page := 1
+	for {
+		r := NewGetRequest(path)
+		r.pager.Page = page
+		r.pager.OrderBy = "asc"
+		resp, err := l.Do(r, true)
+		if err != nil {
+			return nil, err
+		}
+		ret := []*NonFungibleInformation{}
+		err = json.Unmarshal(resp.ResponseData, &ret)
+		if err != nil {
+			return nil, err
+		}
+		if len(ret) == 0 {
+			break
+		}
+		all = append(all, ret...)
+		page++
+	}
+	return all, nil
+}
+
+type ParentNonFungible struct {
+	Name      string `json:"name"`
+	TokenId   string `json:"tokenId"`
+	Meta      string `json:"meta"`
+	CreatedAt int64  `json:"createdAt"`
+	BurnedAt  int64  `json:"burnedAt"`
+}
+
+func (l LBD) RetrieveTheParentOfNonFungible(contractId, tokenType, tokenIndex string) (*ParentNonFungible, error) {
+	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/%s/%s/parent", contractId, tokenType, tokenIndex)
+
+	r := NewGetRequest(path)
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+	ret := new(ParentNonFungible)
+	return ret, json.Unmarshal(resp.ResponseData, ret)
+}
+
+func (l LBD) RetrieveTheRootOfNonFungible(contractId, tokenType, tokenIndex string) (*ParentNonFungible, error) {
+	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/%s/%s/root", contractId, tokenType, tokenIndex)
+
+	r := NewGetRequest(path)
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+	ret := new(ParentNonFungible)
+	return ret, json.Unmarshal(resp.ResponseData, ret)
+}
+
+type FungibleTokenResponce struct {
+	TokenType    string `json:"contractId"`
+	Url          string `json:"url"`
+	Status       string `json:"status"`
+	DetailStatus string `json:"detailStatus"`
+}
+
+func (l LBD) RetrieveTheStatusOfMultipleFungibleTokenIcons(contractId, requestId string) (*FungibleTokenResponce, error) {
+	path := fmt.Sprintf("/v1/item-tokens/%s/fungibles/icon/%s/status", contractId, requestId)
+
+	r := NewGetRequest(path)
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+	ret := new(FungibleTokenResponce)
+	return ret, json.Unmarshal(resp.ResponseData, ret)
+}
+
+type NonFungibleTokenResponce struct {
+	TokenType    string `json:"contractId"`
+	TokenIndex   string `json:"tokenIndex"`
+	Url          string `json:"url"`
+	Status       string `json:"status"`
+	DetailStatus string `json:"detailStatus"`
+}
+
+func (l LBD) RetrieveTheStatusOfMultipleNonFungibleTokenIcons(contractId, requestId string) (*NonFungibleTokenResponce, error) {
+	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/icon/%s/status", contractId, requestId)
+
+	r := NewGetRequest(path)
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+	ret := new(NonFungibleTokenResponce)
 	return ret, json.Unmarshal(resp.ResponseData, ret)
 }
 

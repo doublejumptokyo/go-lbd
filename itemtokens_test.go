@@ -6,7 +6,29 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestListAllFungibles(t *testing.T) {
+	onlyTxMode(t)
+	ret, err := l.ListAllFungibles(itemTokenContractId)
+	assert.Nil(t, err)
+	t.Log(*ret[1])
+}
+
+func TestRetrieveFungibleInformation(t *testing.T) {
+	onlyTxMode(t)
+	ret, err := l.RetrieveFungibleInformation(itemTokenContractId, tokenType)
+	assert.Nil(t, err)
+	t.Log(ret)
+}
+
+func TestRetrieveAllFungibleHolders(t *testing.T) {
+	onlyTxMode(t)
+	ret, err := l.RetrieveAllFungibleHolders(itemTokenContractId, tokenType)
+	assert.Nil(t, err)
+	t.Log(*ret[1])
+}
+
 func TestListAllNonFungibles(t *testing.T) {
+	onlyTxMode(t)
 	ret, err := l.ListAllNonFungibles(itemTokenContractId)
 	assert.Nil(t, err)
 	t.Log(*ret[1])
@@ -62,6 +84,39 @@ func TestUpdateNonFungibleInformation(t *testing.T) {
 func TestRetrieveTheHolderOfSpecificNonFungible(t *testing.T) {
 	onlyTxMode(t)
 	ret, err := l.RetrieveTheHolderOfSpecificNonFungible(itemTokenContractId, tokenType, "00000001")
+	assert.Nil(t, err)
+	t.Log(ret)
+}
+
+func TestListTheChildrenOfNonFungible(t *testing.T) {
+	onlyTxMode(t)
+	ret, err := l.ListTheChildrenOfNonFungible(itemTokenContractId, tokenType, "00000001")
+	assert.Nil(t, err)
+	t.Log(*ret[1])
+}
+
+func TestRetrieveTheParentOfNonFungible(t *testing.T) {
+	onlyTxMode(t)
+	ret, err := l.RetrieveTheParentOfNonFungible(itemTokenContractId, tokenType, "00000001")
+	assert.Nil(t, err)
+	t.Log(ret)
+}
+func TestRetrieveTheRootOfNonFungible(t *testing.T) {
+	onlyTxMode(t)
+	ret, err := l.RetrieveTheRootOfNonFungible(itemTokenContractId, tokenType, "00000001")
+	assert.Nil(t, err)
+	t.Log(ret)
+}
+
+func TestRetrieveTheStatusOfMultipleFungibleTokenIcons(t *testing.T) {
+	onlyTxMode(t)
+	ret, err := l.RetrieveTheStatusOfMultipleFungibleTokenIcons(itemTokenContractId, "101")
+	assert.Nil(t, err)
+	t.Log(ret)
+}
+func TestRetrieveTheStatusOfMultipleNonFungibleTokenIcons(t *testing.T) {
+	onlyTxMode(t)
+	ret, err := l.RetrieveTheStatusOfMultipleNonFungibleTokenIcons(itemTokenContractId, "101")
 	assert.Nil(t, err)
 	t.Log(ret)
 }
