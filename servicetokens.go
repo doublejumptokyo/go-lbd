@@ -82,6 +82,11 @@ func (l *LBD) MintServiceToken(contractId string, to string, amount *big.Int) (*
 	return UnmarshalTransaction(resp.ResponseData)
 }
 
+func (r UpdateServiceTokenInformationRequest) Encode() string {
+	base := r.Request.Encode()
+	return fmt.Sprintf("%s?meta=%s&name=%s&ownerAddress=%s&ownerSecret=%s", base, r.Meta, r.Name, r.OwnerAddress, r.OwnerSecret)
+}
+
 type UpdateServiceTokenInformationRequest struct {
 	*Request
 	OwnerAddress string `json:"ownerAddress"`
@@ -107,6 +112,14 @@ func (l *LBD) UpdateServiceTokenInformation(contractId, name, meta string) (*Tra
 	}
 
 	return UnmarshalTransaction(resp.ResponseData)
+}
+
+func (r BurnServiceTokenRequest) Encode() string {
+	base := r.Request.Encode()
+	if r.FromUserId != "" {
+		return fmt.Sprintf("%s?amount=%s&fromUserId=%s&ownerAddress=%s&ownerSecret=%s", base, r.Amount, r.FromUserId, r.OwnerAddress, r.OwnerSecret)
+	}
+	return fmt.Sprintf("%s?amount=%s&fromAddress=%s&ownerAddress=%s&ownerSecret=%s", base, r.Amount, r.FromAddress, r.OwnerAddress, r.OwnerSecret)
 }
 
 type BurnServiceTokenRequest struct {

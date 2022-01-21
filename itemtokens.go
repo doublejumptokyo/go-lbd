@@ -119,7 +119,7 @@ type FungibleInformation struct {
 }
 
 func (l LBD) RetrieveFungibleInformation(contractId, tokenType string) (*FungibleInformation, error) {
-	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/%s", contractId, tokenType)
+	path := fmt.Sprintf("/v1/item-tokens/%s/fungibles/%s", contractId, tokenType)
 	r := NewGetRequest(path)
 	resp, err := l.Do(r, true)
 	if err != nil {
@@ -628,6 +628,14 @@ func (l *LBD) UpdateMultipleFungibleTokenIcons(contactId string, updateList []*U
 	return UnmarshalTransaction(resp.ResponseData)
 }
 
+func (r UpdateFungibleInformationRequest) Encode() string {
+	base := r.Request.Encode()
+	if r.Meta != "" {
+		return fmt.Sprintf("%s?meta=%s&name=%s&ownerAddress=%s&ownerSecret=%s", base, r.Meta, r.Name, r.OwnerAddress, r.OwnerSecret)
+	}
+	return fmt.Sprintf("%s?name=%s&ownerAddress=%s&ownerSecret=%s", base, r.Name, r.OwnerAddress, r.OwnerSecret)
+}
+
 type UpdateFungibleInformationRequest struct {
 	*Request
 	OwnerAddress string `json:"ownerAddress"`
@@ -654,6 +662,14 @@ func (l *LBD) UpdateFungibleInformation(contractId, tokenType, name, meta string
 	return UnmarshalTransaction(resp.ResponseData)
 }
 
+func (r AttachNonFungibleRequest) Encode() string {
+	base := r.Request.Encode()
+	if r.TokenHolderUserId != "" {
+		return fmt.Sprintf("%s?parentTokenId=%s&serviceWalletAddress=%s&serviceWalletSecret=%s&tokenHolderUserId=%s", base, r.ParentTokenId, r.ServiceWalletAddress, r.ServiceWalletSecret, r.TokenHolderUserId)
+	}
+	return fmt.Sprintf("%s?parentTokenId=%s&serviceWalletAddress=%s&serviceWalletSecret=%s&tokenHolderAddress=%s", base, r.ParentTokenId, r.ServiceWalletAddress, r.ServiceWalletSecret, r.TokenHolderAddress)
+}
+
 type AttachNonFungibleRequest struct {
 	*Request
 	ParentTokenId        string `json:"parentTokenId"`
@@ -663,7 +679,7 @@ type AttachNonFungibleRequest struct {
 	TokenHolderUserId    string `json:"tokenHolderUserId"`
 }
 
-func (l *LBD) AttachNonFungibleAnother(contractId, tokenType, tokenIndex, tokenId string) (*Transaction, error) {
+func (l *LBD) AttachNonFungibleAnother(contractId, tokenType, tokenIndex, tokenId, userId string) (*Transaction, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/%s/%s/parent", contractId, tokenType, tokenIndex)
 
 	r := AttachNonFungibleRequest{
@@ -672,6 +688,7 @@ func (l *LBD) AttachNonFungibleAnother(contractId, tokenType, tokenIndex, tokenI
 		ServiceWalletAddress: l.Owner.Address,
 		ServiceWalletSecret:  l.Owner.Secret,
 		TokenHolderAddress:   l.Owner.Address,
+		TokenHolderUserId:    userId,
 	}
 
 	resp, err := l.Do(r, true)
@@ -733,6 +750,14 @@ func (l *LBD) IssueFungible(contractId, name, meta string) (*Transaction, error)
 		return nil, err
 	}
 	return UnmarshalTransaction(resp.ResponseData)
+}
+
+func (r MintFungibleRequest) Encode() string {
+	base := r.Request.Encode()
+	if r.ToUserId != "" {
+		return fmt.Sprintf("%s?amount=%s&ownerAddress=%s&ownerSecret=%s&toUserId=%s", base, r.Amount, r.OwnerAddress, r.OwnerSecret, r.ToUserId)
+	}
+	return fmt.Sprintf("%s?amount=%s&ownerAddress=%s&ownerSecret=%s&toAddress=%s", base, r.Amount, r.OwnerAddress, r.OwnerSecret, r.ToAddress)
 }
 
 type MintFungibleRequest struct {

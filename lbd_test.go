@@ -8,14 +8,17 @@ import (
 )
 
 var (
-	l                   = &LBD{}
-	serviceID           = os.Getenv("SERVICE_ID")
-	owner               = NewWallet(os.Getenv("OWNER_ADDR"), os.Getenv("OWNER_SECRET"))
-	itemTokenContractId = os.Getenv("ITEMTOKEN_CONTRACT_ID")
-	tokenType           = "10000001"
-	userId              = os.Getenv("USER_ID")
-	toAddress           = userId
-	sessionToken        = os.Getenv("SESSION")
+	l                      = &LBD{}
+	serviceID              = os.Getenv("SERVICE_ID")
+	owner                  = NewWallet(os.Getenv("OWNER_ADDR"), os.Getenv("OWNER_SECRET"))
+	itemTokenContractId    = os.Getenv("ITEMTOKEN_CONTRACT_ID")
+	serviceTokenContractId = os.Getenv("SERVICETOKEN_CONTRACT_ID")
+	tokenType              = "10000001"
+	funjibleTokenType      = "00000001"
+	userId                 = os.Getenv("USER_ID")
+	toAddress              = userId
+	sessionToken           = os.Getenv("SESSION")
+	walletAddress          = "tlink170jwwjlsj6rdxpg9lz36ee59sankypu7kzsc9z"
 )
 
 func TestSign(t *testing.T) {

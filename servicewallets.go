@@ -331,6 +331,14 @@ func (l *LBD) RetrieveBalanceSpecificNonFungible(walletAddress, contractId, toke
 
 // Transfer
 
+func (r TransferRequest) Encode() string {
+	base := r.Request.Encode()
+	if r.ToUserId != "" {
+		return fmt.Sprintf("%s?amount=%s&toUserId=%s&walletSecret=%s", base, r.Amount, r.ToUserId, r.WalletSecret)
+	}
+	return fmt.Sprintf("%s?amount=%s&toAddress=%s&walletSecret=%s", base, r.Amount, r.ToAddress, r.WalletSecret)
+}
+
 type TransferRequest struct {
 	*Request
 	WalletSecret string `json:"walletSecret"`
