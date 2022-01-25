@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
+	"strings"
 )
 
 type Wallet struct {
@@ -215,7 +216,7 @@ func (l *LBD) RetrieveBaseCoinBalance(walletAddress string) (*RetrieveBaseCoinBa
 	return ret, json.Unmarshal(resp.ResponseData, ret)
 }
 
-type RetrieveBalanceServiceTokensResponce struct {
+type RetrieveBalanceServiceTokensResponse struct {
 	ContractID string `json:"contractId"`
 	Name       string `json:"name"`
 	Symbol     string `json:"symbol"`
@@ -224,10 +225,10 @@ type RetrieveBalanceServiceTokensResponce struct {
 	ImgUri     string `json:"imgUri"`
 }
 
-func (l *LBD) RetrieveBalanceAllServiceTokens(walletAddress string) ([]*RetrieveBalanceServiceTokensResponce, error) {
+func (l *LBD) RetrieveBalanceAllServiceTokens(walletAddress string) ([]*RetrieveBalanceServiceTokensResponse, error) {
 	path := fmt.Sprintf("/v1/wallets/%s/service-tokens", walletAddress)
 
-	all := []*RetrieveBalanceServiceTokensResponce{}
+	all := []*RetrieveBalanceServiceTokensResponse{}
 	page := 1
 	for {
 		r := NewGetRequest(path)
@@ -237,7 +238,7 @@ func (l *LBD) RetrieveBalanceAllServiceTokens(walletAddress string) ([]*Retrieve
 		if err != nil {
 			return nil, err
 		}
-		ret := []*RetrieveBalanceServiceTokensResponce{}
+		ret := []*RetrieveBalanceServiceTokensResponse{}
 		err = json.Unmarshal(resp.ResponseData, &ret)
 		if err != nil {
 			return nil, err
@@ -252,7 +253,7 @@ func (l *LBD) RetrieveBalanceAllServiceTokens(walletAddress string) ([]*Retrieve
 	return all, nil
 }
 
-func (l *LBD) RetrieveBalanceSpecificServiceTokenWallet(walletAddress, contractId string) (*RetrieveBalanceServiceTokensResponce, error) {
+func (l *LBD) RetrieveBalanceSpecificServiceTokenWallet(walletAddress, contractId string) (*RetrieveBalanceServiceTokensResponse, error) {
 	path := fmt.Sprintf("/v1/wallets/%s/service-tokens/%s", walletAddress, contractId)
 
 	r := NewGetRequest(path)
@@ -260,7 +261,7 @@ func (l *LBD) RetrieveBalanceSpecificServiceTokenWallet(walletAddress, contractI
 	if err != nil {
 		return nil, err
 	}
-	ret := new(RetrieveBalanceServiceTokensResponce)
+	ret := new(RetrieveBalanceServiceTokensResponse)
 	return ret, json.Unmarshal(resp.ResponseData, ret)
 }
 
@@ -311,13 +312,13 @@ func (l *LBD) RetrieveBalanceSpecificFungible(walletAddress, contractId, tokenTy
 	return ret, json.Unmarshal(resp.ResponseData, ret)
 }
 
-type RetrieveBalanceNonFungibles struct {
+type RetrieveBalanceNonFungible struct {
 	TokenIndex string `json:"tokenIndex"`
 	Name       string `json:"name"`
 	Meta       string `json:"meta"`
 }
 
-func (l *LBD) RetrieveBalanceSpecificNonFungible(walletAddress, contractId, tokenType, tokenIndex string) (*RetrieveBalanceNonFungibles, error) {
+func (l *LBD) RetrieveBalanceSpecificNonFungible(walletAddress, contractId, tokenType, tokenIndex string) (*RetrieveBalanceNonFungible, error) {
 	path := fmt.Sprintf("/v1/wallets/%s/item-tokens/%s/non-fungibles/%s/%s", walletAddress, contractId, tokenType, tokenIndex)
 
 	r := NewGetRequest(path)
@@ -325,7 +326,7 @@ func (l *LBD) RetrieveBalanceSpecificNonFungible(walletAddress, contractId, toke
 	if err != nil {
 		return nil, err
 	}
-	ret := new(RetrieveBalanceNonFungibles)
+	ret := new(RetrieveBalanceNonFungible)
 	return ret, json.Unmarshal(resp.ResponseData, ret)
 }
 
@@ -397,18 +398,36 @@ type TransferList struct {
 
 type BatchTransferNonFungibleRequest struct {
 	*Request
-	WalletSecret string `json:"walletSecret"`
-	ToUserId     string `json:"toUserId,omitempty"`
-	ToAddress    string `json:"toAddress,omitempty"`
-	TransferList []*TransferList
+	WalletSecret string          `json:"walletSecret"`
+	ToUserId     string          `json:"toUserId,omitempty"`
+	ToAddress    string          `json:"toAddress,omitempty"`
+	TransferList []*TransferList `json:"transferList"`
 }
 
-func (l *LBD) BatchTransferNonFungible(from *Wallet, contractId, to string, transferList []*TransferList) (*Transaction, error) {
-	path := fmt.Sprintf("/v1/wallets/%s/item-tokens/%s/non-fungibles/batch-transfer", from.Address, contractId)
+func (r BatchTransferNonFungibleRequest) Encode() string {
+	base := r.Request.Encode()
+
+	tokenIds := make([]string, len(r.TransferList))
+	for i, m := range r.TransferList {
+		tokenIds[i] = m.TokenId
+	}
+
+	transferList := fmt.Sprintf("transferList.tokenId=%s",
+		strings.Join(tokenIds, ","),
+	)
+
+	if r.ToUserId != "" {
+		return fmt.Sprintf("%s?toUserId=%s&%s&walletSecret=%s", base, r.ToUserId, transferList, r.WalletSecret)
+	}
+	return fmt.Sprintf("%s?toAddress=%s&%s&walletSecret=%s", base, r.ToAddress, transferList, r.WalletSecret)
+}
+
+func (l *LBD) BatchTransferNonFungible(walletAddress, contactId, to string, transferList []*TransferList) (*Transaction, error) {
+	path := fmt.Sprintf("/v1/wallets/%s/item-tokens/%s/non-fungibles/batch-transfer", walletAddress, contactId)
 
 	r := BatchTransferNonFungibleRequest{
 		Request:      NewPostRequest(path),
-		WalletSecret: from.Secret,
+		WalletSecret: l.Owner.Secret,
 		TransferList: transferList,
 	}
 
