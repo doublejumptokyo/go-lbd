@@ -91,8 +91,8 @@ type UpdateServiceTokenInformationRequest struct {
 	*Request
 	OwnerAddress string `json:"ownerAddress"`
 	OwnerSecret  string `json:"ownerSecret"`
-	Name         string `json:"name"`
-	Meta         string `json:"meta"`
+	Name         string `json:"name,omitempty"`
+	Meta         string `json:"meta,omitempty"`
 }
 
 func (l *LBD) UpdateServiceTokenInformation(contractId, name, meta string) (*Transaction, error) {
