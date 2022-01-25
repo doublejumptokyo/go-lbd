@@ -1,7 +1,6 @@
 package lbd
 
 import (
-	"fmt"
 	"math/big"
 	"testing"
 
@@ -15,21 +14,21 @@ func TestListAllFungibles(t *testing.T) {
 }
 
 func TestRetrieveFungibleInformation(t *testing.T) {
-	ret, err := l.RetrieveFungibleInformation(itemTokenContractId, funjibleTokenType)
+	ret, err := l.RetrieveFungibleInformation(itemTokenContractId, fungibleTokenType)
 	assert.Nil(t, err)
 	t.Log(ret)
 }
 
 func TestRetrieveAllFungibleHolders(t *testing.T) {
-	ret, err := l.RetrieveAllFungibleHolders(itemTokenContractId, funjibleTokenType)
+	ret, err := l.RetrieveAllFungibleHolders(itemTokenContractId, fungibleTokenType)
 	assert.Nil(t, err)
-	t.Log(*ret[1])
+	t.Log(*ret[0])
 }
 
 func TestListAllNonFungibles(t *testing.T) {
 	ret, err := l.ListAllNonFungibles(itemTokenContractId)
 	assert.Nil(t, err)
-	t.Log(*ret[0])
+	t.Log(*ret[1])
 }
 
 func TestCreateNonFungible(t *testing.T) {
@@ -99,12 +98,12 @@ func TestRetrieveTheRootOfNonFungible(t *testing.T) {
 }
 
 func TestRetrieveTheStatusOfMultipleFungibleTokenIcons(t *testing.T) {
-	ret, err := l.RetrieveTheStatusOfMultipleFungibleTokenIcons(itemTokenContractId, "101")
+	ret, err := l.RetrieveTheStatusOfMultipleFungibleTokenIcons(itemTokenContractId, "63f34026-ffef-4dcf-a512-746f3e512378")
 	assert.Nil(t, err)
 	t.Log(ret)
 }
 func TestRetrieveTheStatusOfMultipleNonFungibleTokenIcons(t *testing.T) {
-	ret, err := l.RetrieveTheStatusOfMultipleNonFungibleTokenIcons(itemTokenContractId, "101")
+	ret, err := l.RetrieveTheStatusOfMultipleNonFungibleTokenIcons(itemTokenContractId, "df6629c7-f1b6-4a82-81b4-6cc3083c2785")
 	assert.Nil(t, err)
 	t.Log(ret)
 }
@@ -112,8 +111,8 @@ func TestRetrieveTheStatusOfMultipleNonFungibleTokenIcons(t *testing.T) {
 func TestUpdateMultipleNonFungibleTokenIcons(t *testing.T) {
 	updateList := []*UpdateList{
 		{
-			TokenType:  "10000002",
-			TokenIndex: "000004c7",
+			TokenType:  "10000001",
+			TokenIndex: "10000003",
 		},
 	}
 	ret, err := l.UpdateMultipleNonFungibleTokenIcons(itemTokenContractId, updateList)
@@ -122,7 +121,7 @@ func TestUpdateMultipleNonFungibleTokenIcons(t *testing.T) {
 }
 
 func TestUpdateMultipleFungibleTokenIcons(t *testing.T) {
-	updateList := []*UpdateList{
+	updateList := []*UpdateFungibleList{
 		{
 			TokenType: "10000002",
 		},
@@ -133,7 +132,7 @@ func TestUpdateMultipleFungibleTokenIcons(t *testing.T) {
 }
 
 func TestUpdateFungibleInformation(t *testing.T) {
-	ret, err := l.UpdateFungibleInformation(itemTokenContractId, funjibleTokenType, name, meta)
+	ret, err := l.UpdateFungibleInformation(itemTokenContractId, fungibleTokenType, name, meta)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -141,7 +140,7 @@ func TestUpdateFungibleInformation(t *testing.T) {
 }
 
 func TestAttachNonFungibleAnother(t *testing.T) {
-	ret, err := l.AttachNonFungibleAnother(itemTokenContractId, tokenType, "00000001", "000000", userId)
+	ret, err := l.AttachNonFungibleAnother(itemTokenContractId, tokenType, "00000001", " 1000000600000001", userId)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -149,7 +148,7 @@ func TestAttachNonFungibleAnother(t *testing.T) {
 }
 
 func TestDetachNonFungibleParent(t *testing.T) {
-	ret, err := l.DetachNonFungibleParent(itemTokenContractId, tokenType, "00000001")
+	ret, err := l.DetachNonFungibleParent(itemTokenContractId, tokenType, "00000001", userId)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -165,13 +164,7 @@ func TestIssueFungible(t *testing.T) {
 }
 
 func TestMintFungible(t *testing.T) {
-	fmt.Println(big.NewInt(1000))
-	fmt.Println(itemTokenContractId)
-	fmt.Println(funjibleTokenType)
-	fmt.Println(toAddress)
-	// fmt.Println(owner.Address)
-
-	ret, err := l.MintFungible(itemTokenContractId, funjibleTokenType, toAddress, big.NewInt(1000))
+	ret, err := l.MintFungible(itemTokenContractId, fungibleTokenType, toAddress, big.NewInt(1000))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -186,10 +179,18 @@ func TestBurnFungible(t *testing.T) {
 	t.Log(ret)
 }
 
-func TestMintMultipleNonFungibleResipients(t *testing.T) {
-	mintList := []*MintList{}
+func MintMultipleNonFungibleRecipients(t *testing.T) {
+	mintList := []*MultiMintList{
+		{
+			TokenType: "10000006",
+			Name:      "testToken",
+			Meta:      "test test test",
+			ToAddress: toAddress,
+			ToUserId:  "",
+		},
+	}
 
-	ret, err := l.MintMultipleNonFungibleResipients(itemTokenContractId, toAddress, mintList)
+	ret, err := l.MintMultipleNonFungibleRecipients(itemTokenContractId, mintList)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -197,7 +198,13 @@ func TestMintMultipleNonFungibleResipients(t *testing.T) {
 }
 
 func TestMintMultipleNonFungible(t *testing.T) {
-	mintList := []*MintList{}
+	mintList := []*MintList{
+		{
+			TokenType: tokenType,
+			Name:      name,
+			Meta:      meta,
+		},
+	}
 
 	ret, err := l.MintMultipleNonFungible(itemTokenContractId, toAddress, mintList)
 	if err != nil {

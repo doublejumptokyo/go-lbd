@@ -130,13 +130,13 @@ func (l LBD) RetrieveFungibleInformation(contractId, tokenType string) (*Fungibl
 }
 
 type FungibleHolers struct {
-	WalletAddress *string `json:"walletAddress"`
-	UserID        *string `json:"userId"`
-	Amount        string  `json:"amount"`
+	WalletAddress string `json:"walletAddress"`
+	UserID        string `json:"userId"`
+	Amount        string `json:"amount"`
 }
 
 func (l LBD) RetrieveAllFungibleHolders(contractId, tokenType string) ([]*FungibleHolers, error) {
-	path := fmt.Sprintf(" /v1/item-tokens/%s/fungibles/%s/holders", contractId, tokenType)
+	path := fmt.Sprintf("/v1/item-tokens/%s/fungibles/%s/holders", contractId, tokenType)
 
 	all := []*FungibleHolers{}
 	page := 1
@@ -394,26 +394,36 @@ func (l LBD) RetrieveTheRootOfNonFungible(contractId, tokenType, tokenIndex stri
 	return ret, json.Unmarshal(resp.ResponseData, ret)
 }
 
-type FungibleTokenResponce struct {
+type FungibleTokenResponse struct {
 	TokenType    string `json:"contractId"`
 	Url          string `json:"url"`
 	Status       string `json:"status"`
 	DetailStatus string `json:"detailStatus"`
 }
 
-func (l LBD) RetrieveTheStatusOfMultipleFungibleTokenIcons(contractId, requestId string) (*FungibleTokenResponce, error) {
+func (l LBD) RetrieveTheStatusOfMultipleFungibleTokenIcons(contractId, requestId string) ([]*FungibleTokenResponse, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/fungibles/icon/%s/status", contractId, requestId)
 
+	all := []*FungibleTokenResponse{}
 	r := NewGetRequest(path)
+
 	resp, err := l.Do(r, true)
 	if err != nil {
 		return nil, err
 	}
-	ret := new(FungibleTokenResponce)
-	return ret, json.Unmarshal(resp.ResponseData, ret)
+
+	ret := []*FungibleTokenResponse{}
+
+	err = json.Unmarshal(resp.ResponseData, &ret)
+	if err != nil {
+		return nil, err
+	}
+
+	all = append(all, ret...)
+	return all, nil
 }
 
-type NonFungibleTokenResponce struct {
+type NonFungibleTokenResponse struct {
 	TokenType    string `json:"contractId"`
 	TokenIndex   string `json:"tokenIndex"`
 	Url          string `json:"url"`
@@ -421,16 +431,26 @@ type NonFungibleTokenResponce struct {
 	DetailStatus string `json:"detailStatus"`
 }
 
-func (l LBD) RetrieveTheStatusOfMultipleNonFungibleTokenIcons(contractId, requestId string) (*NonFungibleTokenResponce, error) {
+func (l LBD) RetrieveTheStatusOfMultipleNonFungibleTokenIcons(contractId, requestId string) ([]*NonFungibleTokenResponse, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/icon/%s/status", contractId, requestId)
 
+	all := []*NonFungibleTokenResponse{}
 	r := NewGetRequest(path)
+
 	resp, err := l.Do(r, true)
 	if err != nil {
 		return nil, err
 	}
-	ret := new(NonFungibleTokenResponce)
-	return ret, json.Unmarshal(resp.ResponseData, ret)
+
+	ret := []*NonFungibleTokenResponse{}
+
+	err = json.Unmarshal(resp.ResponseData, &ret)
+	if err != nil {
+		return nil, err
+	}
+
+	all = append(all, ret...)
+	return all, nil
 }
 
 type MintNonFungibleRequest struct {
@@ -572,7 +592,7 @@ func (l *LBD) UpdateNonFungibleInformation(contractId, tokenType, tokenIndex, na
 
 type UpdateMultipleFungibleTokenIconsRequest struct {
 	*Request
-	UpdateList []*UpdateList `json:"updateList"`
+	UpdateList []*UpdateFungibleList `json:"updateList"`
 }
 
 type UpdateList struct {
@@ -580,7 +600,26 @@ type UpdateList struct {
 	TokenIndex string `json:"tokenIndex"`
 }
 
+type UpdateFungibleList struct {
+	TokenType string `json:"tokenType"`
+}
+
 func (r UpdateMultipleFungibleTokenIconsRequest) Encode() string {
+	base := r.Request.Encode()
+	types := make([]string, len(r.UpdateList))
+
+	for i, m := range r.UpdateList {
+		types[i] = m.TokenType
+	}
+	updateList := fmt.Sprintf("updateList.tokenType=%s",
+		strings.Join(types, ","),
+	)
+
+	ret := fmt.Sprintf("%s?%s", base, updateList)
+	return ret
+}
+
+func (r UpdateMultipleNonFungibleTokenIconsRequest) Encode() string {
 	base := r.Request.Encode()
 	types := make([]string, len(r.UpdateList))
 	indexes := make([]string, len(r.UpdateList))
@@ -598,10 +637,19 @@ func (r UpdateMultipleFungibleTokenIconsRequest) Encode() string {
 	return ret
 }
 
-func (l *LBD) UpdateMultipleNonFungibleTokenIcons(contactId string, updateList []*UpdateList) (*Transaction, error) {
+type UpdateMultipleNonFungibleTokenIconsRequest struct {
+	*Request
+	UpdateList []*UpdateList `json:"updateList"`
+}
+
+type UpdateMultipleTokenIconsResponse struct {
+	RequestId string `json:"requestId"`
+}
+
+func (l *LBD) UpdateMultipleNonFungibleTokenIcons(contactId string, updateList []*UpdateList) (*UpdateMultipleTokenIconsResponse, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/icon", contactId)
 
-	r := UpdateMultipleFungibleTokenIconsRequest{
+	r := UpdateMultipleNonFungibleTokenIconsRequest{
 		Request:    NewPutRequest(path),
 		UpdateList: updateList,
 	}
@@ -610,10 +658,12 @@ func (l *LBD) UpdateMultipleNonFungibleTokenIcons(contactId string, updateList [
 	if err != nil {
 		return nil, err
 	}
-	return UnmarshalTransaction(resp.ResponseData)
+
+	ret := new(UpdateMultipleTokenIconsResponse)
+	return ret, json.Unmarshal(resp.ResponseData, &ret)
 }
 
-func (l *LBD) UpdateMultipleFungibleTokenIcons(contactId string, updateList []*UpdateList) (*Transaction, error) {
+func (l *LBD) UpdateMultipleFungibleTokenIcons(contactId string, updateList []*UpdateFungibleList) (*UpdateMultipleTokenIconsResponse, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/fungibles/icon", contactId)
 
 	r := UpdateMultipleFungibleTokenIconsRequest{
@@ -625,22 +675,21 @@ func (l *LBD) UpdateMultipleFungibleTokenIcons(contactId string, updateList []*U
 	if err != nil {
 		return nil, err
 	}
-	return UnmarshalTransaction(resp.ResponseData)
+
+	ret := new(UpdateMultipleTokenIconsResponse)
+	return ret, json.Unmarshal(resp.ResponseData, &ret)
 }
 
 func (r UpdateFungibleInformationRequest) Encode() string {
 	base := r.Request.Encode()
-	if r.Meta != "" {
-		return fmt.Sprintf("%s?meta=%s&name=%s&ownerAddress=%s&ownerSecret=%s", base, r.Meta, r.Name, r.OwnerAddress, r.OwnerSecret)
-	}
-	return fmt.Sprintf("%s?name=%s&ownerAddress=%s&ownerSecret=%s", base, r.Name, r.OwnerAddress, r.OwnerSecret)
+	return fmt.Sprintf("%s?meta=%s&name=%s&ownerAddress=%s&ownerSecret=%s", base, r.Meta, r.Name, r.OwnerAddress, r.OwnerSecret)
 }
 
 type UpdateFungibleInformationRequest struct {
 	*Request
 	OwnerAddress string `json:"ownerAddress"`
 	OwnerSecret  string `json:"ownerSecret"`
-	Name         string `json:"name"`
+	Name         string `json:"name,omitempty"`
 	Meta         string `json:"meta,omitempty"`
 }
 
@@ -675,20 +724,24 @@ type AttachNonFungibleRequest struct {
 	ParentTokenId        string `json:"parentTokenId"`
 	ServiceWalletAddress string `json:"serviceWalletAddress"`
 	ServiceWalletSecret  string `json:"serviceWalletSecret"`
-	TokenHolderAddress   string `json:"tokenHolderAddress"`
-	TokenHolderUserId    string `json:"tokenHolderUserId"`
+	TokenHolderAddress   string `json:"tokenHolderAddress,omitempty"`
+	TokenHolderUserId    string `json:"tokenHolderUserId,omitempty"`
 }
 
-func (l *LBD) AttachNonFungibleAnother(contractId, tokenType, tokenIndex, tokenId, userId string) (*Transaction, error) {
+func (l *LBD) AttachNonFungibleAnother(contractId, tokenType, tokenIndex, parentTokenId, to string) (*Transaction, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/%s/%s/parent", contractId, tokenType, tokenIndex)
 
 	r := AttachNonFungibleRequest{
 		Request:              NewPostRequest(path),
-		ParentTokenId:        tokenId,
+		ParentTokenId:        parentTokenId,
 		ServiceWalletAddress: l.Owner.Address,
 		ServiceWalletSecret:  l.Owner.Secret,
-		TokenHolderAddress:   l.Owner.Address,
-		TokenHolderUserId:    userId,
+	}
+
+	if l.IsAddress(to) {
+		r.TokenHolderAddress = to
+	} else {
+		r.TokenHolderUserId = to
 	}
 
 	resp, err := l.Do(r, true)
@@ -699,22 +752,35 @@ func (l *LBD) AttachNonFungibleAnother(contractId, tokenType, tokenIndex, tokenI
 	return UnmarshalTransaction(resp.ResponseData)
 }
 
+func (r DetachNonFungibleParentRequest) Encode() string {
+	base := r.Request.Encode()
+	if r.TokenHolderUserId != "" {
+		return fmt.Sprintf("%s?serviceWalletAddress=%s&serviceWalletSecret=%s&tokenHolderUserId=%s", base, r.ServiceWalletAddress, r.ServiceWalletSecret, r.TokenHolderUserId)
+	}
+	return fmt.Sprintf("%s?serviceWalletAddress=%s&serviceWalletSecret=%s&tokenHolderAddress=%s", base, r.ServiceWalletAddress, r.ServiceWalletSecret, r.TokenHolderAddress)
+}
+
 type DetachNonFungibleParentRequest struct {
 	*Request
 	ServiceWalletAddress string `json:"serviceWalletAddress"`
 	ServiceWalletSecret  string `json:"serviceWalletSecret"`
-	TokenHolderAddress   string `json:"tokenHolderAddress"`
-	TokenHolderUserId    string `json:"tokenHolderUserId"`
+	TokenHolderAddress   string `json:"tokenHolderAddress,omitempty"`
+	TokenHolderUserId    string `json:"tokenHolderUserId,omitempty"`
 }
 
-func (l *LBD) DetachNonFungibleParent(contractId, tokenType, tokenIndex string) (*Transaction, error) {
+func (l *LBD) DetachNonFungibleParent(contractId, tokenType, tokenIndex, to string) (*Transaction, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/%s/%s/parent", contractId, tokenType, tokenIndex)
 
 	r := DetachNonFungibleParentRequest{
 		Request:              NewDeleteRequest(path),
 		ServiceWalletAddress: l.Owner.Address,
 		ServiceWalletSecret:  l.Owner.Secret,
-		TokenHolderAddress:   l.Owner.Address,
+	}
+
+	if l.IsAddress(to) {
+		r.TokenHolderAddress = to
+	} else {
+		r.TokenHolderUserId = to
 	}
 
 	resp, err := l.Do(r, true)
@@ -727,12 +793,17 @@ func (l *LBD) DetachNonFungibleParent(contractId, tokenType, tokenIndex string) 
 
 // Mint or Burn
 
+func (r CreateFungibleRequest) Encode() string {
+	base := r.Request.Encode()
+	return fmt.Sprintf("%s?meta=%s&name=%s&ownerAddress=%s&ownerSecret=%s", base, r.Meta, r.Name, r.OwnerAddress, r.OwnerSecret)
+}
+
 type CreateFungibleRequest struct {
 	*Request
 	OwnerAddress string `json:"ownerAddress"`
 	OwnerSecret  string `json:"ownerSecret"`
 	Name         string `json:"name"`
-	Meta         string `json:"meta"`
+	Meta         string `json:"meta,omitempty"`
 }
 
 func (l *LBD) IssueFungible(contractId, name, meta string) (*Transaction, error) {
@@ -790,11 +861,19 @@ func (l *LBD) MintFungible(contractId, tokenType, to string, amount *big.Int) (*
 	return UnmarshalTransaction(resp.ResponseData)
 }
 
+func (r BurnItemTokenRequest) Encode() string {
+	base := r.Request.Encode()
+	if r.FromUserId != "" {
+		return fmt.Sprintf("%s?amount=%s&fromUserId=%s&ownerAddress=%s&ownerSecret=%s", base, r.Amount, r.FromUserId, r.OwnerAddress, r.OwnerSecret)
+	}
+	return fmt.Sprintf("%s?amount=%s&fromAddress=%s&ownerAddress=%s&ownerSecret=%s", base, r.Amount, r.FromAddress, r.OwnerAddress, r.OwnerSecret)
+}
+
 type BurnItemTokenRequest struct {
 	*Request
 	OwnerAddress string `json:"ownerAddress"`
 	OwnerSecret  string `json:"ownerSecret"`
-	Amount       string `json:"amount"`
+	Amount       string `json:"amount,omitempty"`
 	FromUserId   string `json:"fromUserId,omitempty"`
 	FromAddress  string `json:"fromAddress,omitempty"`
 }
@@ -822,20 +901,64 @@ func (l *LBD) BurnFungible(contractId, tokenType, from string, amount *big.Int) 
 	return UnmarshalTransaction(resp.ResponseData)
 }
 
-func (l *LBD) MintMultipleNonFungibleResipients(contractId, to string, mintList []*MintList) (*Transaction, error) {
+func (r MintMultipleNonFungibleRecipientsRequest) Encode() string {
+	base := r.Request.Encode()
+	tokenTypes := make([]string, len(r.MintList))
+	name := make([]string, len(r.MintList))
+	meta := make([]string, len(r.MintList))
+	toUserId := make([]string, len(r.MintList))
+	toAddress := make([]string, len(r.MintList))
+
+	for i, m := range r.MintList {
+		meta[i] = m.Meta
+		name[i] = m.Name
+		toAddress[i] = m.ToAddress
+		tokenTypes[i] = m.TokenType
+		toUserId[i] = m.ToUserId
+	}
+
+	if toUserId[0] != "" {
+		mintList := fmt.Sprintf("mintList.meta=%s&mintList.name=%s&mintList.tokenTypes=%s&mintList.toUserId=%s",
+			strings.Join(meta, ","),
+			strings.Join(name, ","),
+			strings.Join(tokenTypes, ","),
+			strings.Join(toUserId, ","),
+		)
+		return fmt.Sprintf("%s?%s", base, mintList)
+	}
+
+	mintList := fmt.Sprintf("mintList.meta=%s&mintList.name=%s&mintList.toAddress=%s&mintList.tokenTypes=%s",
+		strings.Join(meta, ","),
+		strings.Join(name, ","),
+		strings.Join(toAddress, ","),
+		strings.Join(tokenTypes, ","),
+	)
+	return fmt.Sprintf("%s?%s", base, mintList)
+}
+
+type MultiMintList struct {
+	TokenType string `json:"tokenType"`
+	Name      string `json:"name"`
+	Meta      string `json:"meta"`
+	ToAddress string `json:"toAddress,omitempty"`
+	ToUserId  string `json:"toUserId,omitempty"`
+}
+
+type MintMultipleNonFungibleRecipientsRequest struct {
+	*Request
+	OwnerAddress string           `json:"ownerAddress"`
+	OwnerSecret  string           `json:"ownerSecret"`
+	MintList     []*MultiMintList `json:"mintList"`
+}
+
+func (l *LBD) MintMultipleNonFungibleRecipients(contractId string, mintList []*MultiMintList) (*Transaction, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/multi-recipients/multi-mint", contractId)
 
-	r := MintMultipleNonFungibleRequest{
+	r := MintMultipleNonFungibleRecipientsRequest{
 		Request:      NewPostRequest(path),
 		OwnerAddress: l.Owner.Address,
 		OwnerSecret:  l.Owner.Secret,
 		MintList:     mintList,
-	}
-
-	if l.IsAddress(to) {
-		r.ToAddress = to
-	} else {
-		r.ToUserId = to
 	}
 
 	resp, err := l.Do(r, true)
