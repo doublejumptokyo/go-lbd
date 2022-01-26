@@ -404,7 +404,6 @@ type FungibleTokenResponse struct {
 func (l LBD) RetrieveTheStatusOfMultipleFungibleTokenIcons(contractId, requestId string) ([]*FungibleTokenResponse, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/fungibles/icon/%s/status", contractId, requestId)
 
-	all := []*FungibleTokenResponse{}
 	r := NewGetRequest(path)
 
 	resp, err := l.Do(r, true)
@@ -419,8 +418,7 @@ func (l LBD) RetrieveTheStatusOfMultipleFungibleTokenIcons(contractId, requestId
 		return nil, err
 	}
 
-	all = append(all, ret...)
-	return all, nil
+	return ret, nil
 }
 
 type NonFungibleTokenResponse struct {
@@ -434,7 +432,6 @@ type NonFungibleTokenResponse struct {
 func (l LBD) RetrieveTheStatusOfMultipleNonFungibleTokenIcons(contractId, requestId string) ([]*NonFungibleTokenResponse, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/icon/%s/status", contractId, requestId)
 
-	all := []*NonFungibleTokenResponse{}
 	r := NewGetRequest(path)
 
 	resp, err := l.Do(r, true)
@@ -449,8 +446,7 @@ func (l LBD) RetrieveTheStatusOfMultipleNonFungibleTokenIcons(contractId, reques
 		return nil, err
 	}
 
-	all = append(all, ret...)
-	return all, nil
+	return ret, nil
 }
 
 type MintNonFungibleRequest struct {
@@ -682,7 +678,13 @@ func (l *LBD) UpdateMultipleFungibleTokenIcons(contactId string, updateList []*U
 
 func (r UpdateFungibleInformationRequest) Encode() string {
 	base := r.Request.Encode()
-	return fmt.Sprintf("%s?meta=%s&name=%s&ownerAddress=%s&ownerSecret=%s", base, r.Meta, r.Name, r.OwnerAddress, r.OwnerSecret)
+	if r.Name != "" && r.Meta != "" {
+		return fmt.Sprintf("%s?meta=%s&name=%s&ownerAddress=%s&ownerSecret=%s", base, r.Meta, r.Name, r.OwnerAddress, r.OwnerSecret)
+	}
+	if r.Name != "" {
+		return fmt.Sprintf("%s?name=%s&ownerAddress=%s&ownerSecret=%s", base, r.Name, r.OwnerAddress, r.OwnerSecret)
+	}
+	return fmt.Sprintf("%s?meta=%s&ownerAddress=%s&ownerSecret=%s", base, r.Meta, r.OwnerAddress, r.OwnerSecret)
 }
 
 type UpdateFungibleInformationRequest struct {
@@ -700,8 +702,14 @@ func (l *LBD) UpdateFungibleInformation(contractId, tokenType, name, meta string
 		Request:      NewPutRequest(path),
 		OwnerAddress: l.Owner.Address,
 		OwnerSecret:  l.Owner.Secret,
-		Name:         name,
-		Meta:         meta,
+	}
+
+	if name != "" {
+		r.Name = name
+	}
+
+	if meta != "" {
+		r.Meta = meta
 	}
 
 	resp, err := l.Do(r, true)
@@ -795,7 +803,10 @@ func (l *LBD) DetachNonFungibleParent(contractId, tokenType, tokenIndex, to stri
 
 func (r CreateFungibleRequest) Encode() string {
 	base := r.Request.Encode()
-	return fmt.Sprintf("%s?meta=%s&name=%s&ownerAddress=%s&ownerSecret=%s", base, r.Meta, r.Name, r.OwnerAddress, r.OwnerSecret)
+	if r.Meta != "" {
+		return fmt.Sprintf("%s?meta=%s&name=%s&ownerAddress=%s&ownerSecret=%s", base, r.Meta, r.Name, r.OwnerAddress, r.OwnerSecret)
+	}
+	return fmt.Sprintf("%s?name=%s&ownerAddress=%s&ownerSecret=%s", base, r.Name, r.OwnerAddress, r.OwnerSecret)
 }
 
 type CreateFungibleRequest struct {
@@ -814,8 +825,12 @@ func (l *LBD) IssueFungible(contractId, name, meta string) (*Transaction, error)
 		OwnerAddress: l.Owner.Address,
 		OwnerSecret:  l.Owner.Secret,
 		Name:         name,
-		Meta:         meta,
 	}
+
+	if meta != "" {
+		r.Meta = meta
+	}
+
 	resp, err := l.Do(r, true)
 	if err != nil {
 		return nil, err
@@ -909,16 +924,22 @@ func (r MintMultipleNonFungibleRecipientsRequest) Encode() string {
 	toUserId := make([]string, len(r.MintList))
 	toAddress := make([]string, len(r.MintList))
 
+	var userIdList []string
+
 	for i, m := range r.MintList {
 		meta[i] = m.Meta
 		name[i] = m.Name
 		toAddress[i] = m.ToAddress
 		tokenTypes[i] = m.TokenType
 		toUserId[i] = m.ToUserId
+
+		if toUserId[i] != "" {
+			userIdList = toUserId
+		}
 	}
 
-	if toUserId[0] != "" {
-		mintList := fmt.Sprintf("mintList.meta=%s&mintList.name=%s&mintList.tokenTypes=%s&mintList.toUserId=%s",
+	if len(userIdList) != 0 {
+		mintList := fmt.Sprintf("mintList.meta=%s&mintList.name=%s&mintList.tokenType=%s&mintList.toUserId=%s",
 			strings.Join(meta, ","),
 			strings.Join(name, ","),
 			strings.Join(tokenTypes, ","),
@@ -927,13 +948,15 @@ func (r MintMultipleNonFungibleRecipientsRequest) Encode() string {
 		return fmt.Sprintf("%s?%s", base, mintList)
 	}
 
-	mintList := fmt.Sprintf("mintList.meta=%s&mintList.name=%s&mintList.toAddress=%s&mintList.tokenTypes=%s",
+	mintList := fmt.Sprintf("mintList.meta=%s&mintList.name=%s&mintList.toAddress=%s&mintList.tokenType=%s",
 		strings.Join(meta, ","),
 		strings.Join(name, ","),
 		strings.Join(toAddress, ","),
 		strings.Join(tokenTypes, ","),
 	)
+
 	return fmt.Sprintf("%s?%s", base, mintList)
+
 }
 
 type MultiMintList struct {
