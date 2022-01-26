@@ -84,7 +84,13 @@ func (l *LBD) MintServiceToken(contractId string, to string, amount *big.Int) (*
 
 func (r UpdateServiceTokenInformationRequest) Encode() string {
 	base := r.Request.Encode()
-	return fmt.Sprintf("%s?meta=%s&name=%s&ownerAddress=%s&ownerSecret=%s", base, r.Meta, r.Name, r.OwnerAddress, r.OwnerSecret)
+	if r.Name != "" && r.Meta != "" {
+		return fmt.Sprintf("%s?meta=%s&name=%s&ownerAddress=%s&ownerSecret=%s", base, r.Meta, r.Name, r.OwnerAddress, r.OwnerSecret)
+	}
+	if r.Name == "" {
+		return fmt.Sprintf("%s?meta=%s&ownerAddress=%s&ownerSecret=%s", base, r.Meta, r.OwnerAddress, r.OwnerSecret)
+	}
+	return fmt.Sprintf("%s?name=%s&ownerAddress=%s&ownerSecret=%s", base, r.Name, r.OwnerAddress, r.OwnerSecret)
 }
 
 type UpdateServiceTokenInformationRequest struct {
@@ -102,8 +108,14 @@ func (l *LBD) UpdateServiceTokenInformation(contractId, name, meta string) (*Tra
 		Request:      NewPutRequest(path),
 		OwnerAddress: l.Owner.Address,
 		OwnerSecret:  l.Owner.Secret,
-		Name:         name,
-		Meta:         meta,
+	}
+
+	if name != "" {
+		r.Name = name
+	}
+
+	if meta != "" {
+		r.Meta = meta
 	}
 
 	resp, err := l.Do(r, true)
