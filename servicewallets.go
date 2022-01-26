@@ -187,8 +187,9 @@ func (l *LBD) RetrieveServiceWalletInformation(walletAddress string) (*WalletInf
 }
 
 func (l *LBD) RetrieveServiceWalletTransactionHistory(walletAddress string) ([]*Transaction, error) {
-	r := NewGetRequest(fmt.Sprintf("/v1/wallets/%s/transactions", walletAddress))
+	path := fmt.Sprintf("/v1/wallets/%s/transactions", walletAddress)
 
+	r := NewGetRequest(path)
 	data, err := l.Do(r, true)
 	if err != nil {
 		return nil, err

@@ -15,6 +15,7 @@ func TestListAllServiceWallets(t *testing.T) {
 }
 
 func TestTransferBaseCoins(t *testing.T) {
+	onlyTxMode(t)
 	ret, err := l.TransferBaseCoins(owner, toAddress, big.NewInt(1))
 	assert.Nil(t, err)
 	t.Log(ret)
@@ -85,14 +86,13 @@ func TestTransferFungible(t *testing.T) {
 }
 
 func TestBatchTransferNonFungible(t *testing.T) {
-	tokenIndex := "00000001"
 
 	transferList := []*TransferList{
 		{
-			TokenId: tokenType + tokenIndex,
+			TokenId: tokenType + "00000001",
 		},
 		{
-			TokenId: tokenType + tokenIndex,
+			TokenId: tokenType + "00000002",
 		},
 	}
 	ret, err := l.BatchTransferNonFungible(owner.Address, itemTokenContractId, toAddress, transferList)
