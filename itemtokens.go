@@ -924,45 +924,66 @@ func (r MintMultipleNonFungibleRecipientsRequest) Encode() string {
 	toUserId := make([]string, len(r.MintList))
 	toAddress := make([]string, len(r.MintList))
 
-	var userIdList []string
-
 	for i, m := range r.MintList {
 		meta[i] = m.Meta
 		name[i] = m.Name
 		toAddress[i] = m.ToAddress
 		tokenTypes[i] = m.TokenType
 		toUserId[i] = m.ToUserId
+	}
 
-		if toUserId[i] != "" {
-			userIdList = toUserId
+	var metaFlag bool
+	var addressFlag bool
+	var userIdFlag bool
+
+	for _, m := range meta {
+		if m != "" {
+			metaFlag = true
+			break
 		}
 	}
 
-	if len(userIdList) != 0 {
-		mintList := fmt.Sprintf("mintList.meta=%s&mintList.name=%s&mintList.tokenType=%s&mintList.toUserId=%s",
-			strings.Join(meta, ","),
-			strings.Join(name, ","),
-			strings.Join(tokenTypes, ","),
-			strings.Join(toUserId, ","),
-		)
-		return fmt.Sprintf("%s?%s", base, mintList)
+	metaString := ""
+	if metaFlag {
+		metaString = fmt.Sprintf("mintList.meta=%s&", strings.Join(meta, ","))
 	}
 
-	mintList := fmt.Sprintf("mintList.meta=%s&mintList.name=%s&mintList.toAddress=%s&mintList.tokenType=%s",
-		strings.Join(meta, ","),
-		strings.Join(name, ","),
-		strings.Join(toAddress, ","),
-		strings.Join(tokenTypes, ","),
-	)
+	for _, a := range toAddress {
+		if a != "" {
+			addressFlag = true
+			break
+		}
+	}
 
-	return fmt.Sprintf("%s?%s", base, mintList)
+	addressString := ""
+	if addressFlag {
+		addressString = fmt.Sprintf("mintList.toAddress=%s&", strings.Join(toAddress, ","))
+	}
 
+	for _, u := range toUserId {
+		if u != "" {
+			userIdFlag = true
+			break
+		}
+	}
+
+	userIdString := ""
+	if userIdFlag {
+		userIdString = fmt.Sprintf("mintList.toUserId=%s&", strings.Join(toUserId, ","))
+	}
+
+	nameString := fmt.Sprintf("mintList.name=%s&", strings.Join(name, ","))
+	tokenString := fmt.Sprintf("mintList.tokenType=%s&", strings.Join(tokenTypes, ","))
+
+	mintList := fmt.Sprintf("%s%s%s%s%s", metaString, nameString, addressString, userIdString, tokenString)
+
+	return fmt.Sprintf("%s?%sownerAddress=%s&ownerSecret=%s", base, mintList, r.OwnerAddress, r.OwnerSecret)
 }
 
 type MultiMintList struct {
 	TokenType string `json:"tokenType"`
 	Name      string `json:"name"`
-	Meta      string `json:"meta"`
+	Meta      string `json:"meta,omitempty"`
 	ToAddress string `json:"toAddress,omitempty"`
 	ToUserId  string `json:"toUserId,omitempty"`
 }
