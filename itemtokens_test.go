@@ -213,7 +213,6 @@ func TestMintMultipleNonFungibleRecipients(t *testing.T) {
 		{
 			TokenType: "10000005",
 			Name:      "testToken",
-			Meta:      "test test test",
 			ToAddress: toAddress,
 		},
 		{
@@ -225,7 +224,6 @@ func TestMintMultipleNonFungibleRecipients(t *testing.T) {
 		{
 			TokenType: "10000003",
 			Name:      "testToken",
-			Meta:      "test test test",
 			ToUserId:  userId,
 		},
 	}

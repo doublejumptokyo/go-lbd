@@ -916,22 +916,7 @@ func (l *LBD) BurnFungible(contractId, tokenType, from string, amount *big.Int) 
 	return UnmarshalTransaction(resp.ResponseData)
 }
 
-func (r MintMultipleNonFungibleRecipientsRequest) Encode() string {
-	base := r.Request.Encode()
-	tokenTypes := make([]string, len(r.MintList))
-	name := make([]string, len(r.MintList))
-	meta := make([]string, len(r.MintList))
-	toUserId := make([]string, len(r.MintList))
-	toAddress := make([]string, len(r.MintList))
-
-	for i, m := range r.MintList {
-		meta[i] = m.Meta
-		name[i] = m.Name
-		toAddress[i] = m.ToAddress
-		tokenTypes[i] = m.TokenType
-		toUserId[i] = m.ToUserId
-	}
-
+func (r MintMultipleNonFungibleRecipientsRequest) EncodeValidates(meta, name, address, userId, tokenType []string) string {
 	var metaFlag bool
 	var addressFlag bool
 	var userIdFlag bool
@@ -948,7 +933,7 @@ func (r MintMultipleNonFungibleRecipientsRequest) Encode() string {
 		metaString = fmt.Sprintf("mintList.meta=%s&", strings.Join(meta, ","))
 	}
 
-	for _, a := range toAddress {
+	for _, a := range address {
 		if a != "" {
 			addressFlag = true
 			break
@@ -957,10 +942,10 @@ func (r MintMultipleNonFungibleRecipientsRequest) Encode() string {
 
 	addressString := ""
 	if addressFlag {
-		addressString = fmt.Sprintf("mintList.toAddress=%s&", strings.Join(toAddress, ","))
+		addressString = fmt.Sprintf("mintList.toAddress=%s&", strings.Join(address, ","))
 	}
 
-	for _, u := range toUserId {
+	for _, u := range userId {
 		if u != "" {
 			userIdFlag = true
 			break
@@ -969,13 +954,32 @@ func (r MintMultipleNonFungibleRecipientsRequest) Encode() string {
 
 	userIdString := ""
 	if userIdFlag {
-		userIdString = fmt.Sprintf("mintList.toUserId=%s&", strings.Join(toUserId, ","))
+		userIdString = fmt.Sprintf("mintList.toUserId=%s&", strings.Join(userId, ","))
 	}
 
 	nameString := fmt.Sprintf("mintList.name=%s&", strings.Join(name, ","))
-	tokenString := fmt.Sprintf("mintList.tokenType=%s&", strings.Join(tokenTypes, ","))
+	tokenTypeString := fmt.Sprintf("mintList.tokenType=%s&", strings.Join(tokenType, ","))
 
-	mintList := fmt.Sprintf("%s%s%s%s%s", metaString, nameString, addressString, userIdString, tokenString)
+	return metaString + nameString + addressString + userIdString + tokenTypeString
+}
+
+func (r MintMultipleNonFungibleRecipientsRequest) Encode() string {
+	base := r.Request.Encode()
+	tokenTypes := make([]string, len(r.MintList))
+	name := make([]string, len(r.MintList))
+	meta := make([]string, len(r.MintList))
+	toUserId := make([]string, len(r.MintList))
+	toAddress := make([]string, len(r.MintList))
+
+	for i, m := range r.MintList {
+		meta[i] = m.Meta
+		name[i] = m.Name
+		toAddress[i] = m.ToAddress
+		tokenTypes[i] = m.TokenType
+		toUserId[i] = m.ToUserId
+	}
+
+	mintList := r.EncodeValidates(meta, name, toAddress, toUserId, tokenTypes)
 
 	return fmt.Sprintf("%s?%sownerAddress=%s&ownerSecret=%s", base, mintList, r.OwnerAddress, r.OwnerSecret)
 }
