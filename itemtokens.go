@@ -916,55 +916,47 @@ func (l *LBD) BurnFungible(contractId, tokenType, from string, amount *big.Int) 
 	return UnmarshalTransaction(resp.ResponseData)
 }
 
-func (r MintMultipleNonFungibleRecipientsRequest) EncodeValidates(checkList []string) bool {
-	var flag bool
+func encodeValidates(checkList []string, key string) string {
+	var isEmpty bool
+	var result string
 
 	for _, r := range checkList {
 		if r != "" {
-			flag = true
+			isEmpty = true
 			break
 		}
 	}
 
-	return flag
+	if isEmpty {
+		result = fmt.Sprintf(key, strings.Join(checkList, ","))
+	}
+	return result
 }
 
 func (r MintMultipleNonFungibleRecipientsRequest) Encode() string {
 	base := r.Request.Encode()
 	tokenTypes := make([]string, len(r.MintList))
-	name := make([]string, len(r.MintList))
-	meta := make([]string, len(r.MintList))
-	toUserId := make([]string, len(r.MintList))
-	toAddress := make([]string, len(r.MintList))
+	names := make([]string, len(r.MintList))
+	metas := make([]string, len(r.MintList))
+	toUserIds := make([]string, len(r.MintList))
+	toAddresses := make([]string, len(r.MintList))
 
 	for i, m := range r.MintList {
-		meta[i] = m.Meta
-		name[i] = m.Name
-		toAddress[i] = m.ToAddress
+		metas[i] = m.Meta
+		names[i] = m.Name
+		toAddresses[i] = m.ToAddress
 		tokenTypes[i] = m.TokenType
-		toUserId[i] = m.ToUserId
+		toUserIds[i] = m.ToUserId
 	}
 
-	var metaString string
-	var addressString string
-	var userIdString string
+	meta := encodeValidates(metas, "mintList.meta=%s&")
+	toAddress := encodeValidates(toAddresses, "mintList.toAddress=%s&")
+	toUserId := encodeValidates(toUserIds, "mintList.toUserId=%s&")
 
-	if r.EncodeValidates(meta) {
-		metaString = fmt.Sprintf("mintList.meta=%s&", strings.Join(meta, ","))
-	}
+	name := fmt.Sprintf("mintList.name=%s&", strings.Join(names, ","))
+	tokenType := fmt.Sprintf("mintList.tokenType=%s&", strings.Join(tokenTypes, ","))
 
-	if r.EncodeValidates(toAddress) {
-		addressString = fmt.Sprintf("mintList.toAddress=%s&", strings.Join(toAddress, ","))
-	}
-
-	if r.EncodeValidates(toUserId) {
-		userIdString = fmt.Sprintf("mintList.toUserId=%s&", strings.Join(toUserId, ","))
-	}
-
-	nameString := fmt.Sprintf("mintList.name=%s&", strings.Join(name, ","))
-	tokenString := fmt.Sprintf("mintList.tokenType=%s&", strings.Join(tokenTypes, ","))
-
-	mintList := fmt.Sprintf("%s%s%s%s%s", metaString, nameString, addressString, userIdString, tokenString)
+	mintList := fmt.Sprintf("%s%s%s%s%s", meta, name, toAddress, toUserId, tokenType)
 
 	return fmt.Sprintf("%s?%sownerAddress=%s&ownerSecret=%s", base, mintList, r.OwnerAddress, r.OwnerSecret)
 }
