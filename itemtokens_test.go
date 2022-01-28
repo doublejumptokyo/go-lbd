@@ -3,56 +3,68 @@ package lbd
 import (
 	"math/big"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestListAllFungibles(t *testing.T) {
 	onlyTxMode(t)
 	ret, err := l.ListAllFungibles(itemTokenContractId)
-	assert.Nil(t, err)
+	if err != nil {
+		t.Fatal(err)
+	}
 	t.Log(*ret[0])
 }
 
 func TestRetrieveFungibleInformation(t *testing.T) {
 	onlyTxMode(t)
 	ret, err := l.RetrieveFungibleInformation(itemTokenContractId, fungibleTokenType)
-	assert.Nil(t, err)
+	if err != nil {
+		t.Fatal(err)
+	}
 	t.Log(ret)
 }
 
 func TestRetrieveAllFungibleHolders(t *testing.T) {
 	onlyTxMode(t)
 	ret, err := l.RetrieveAllFungibleHolders(itemTokenContractId, fungibleTokenType)
-	assert.Nil(t, err)
+	if err != nil {
+		t.Fatal(err)
+	}
 	t.Log(*ret[0])
 }
 
 func TestListAllNonFungibles(t *testing.T) {
 	onlyTxMode(t)
 	ret, err := l.ListAllNonFungibles(itemTokenContractId)
-	assert.Nil(t, err)
+	if err != nil {
+		t.Fatal(err)
+	}
 	t.Log(*ret[1])
 }
 
 func TestCreateNonFungible(t *testing.T) {
 	onlyTxMode(t)
 	ret, err := l.CreateNonFungible(itemTokenContractId, "NobunagaOda", "Tenkafubu")
-	assert.Nil(t, err)
+	if err != nil {
+		t.Fatal(err)
+	}
 	t.Log(ret)
 }
 
 func TestRetrieveNonFungibleInformation(t *testing.T) {
 	onlyTxMode(t)
 	ret, err := l.RetrieveNonFungibleInformation(itemTokenContractId, tokenType, "00000001")
-	assert.Nil(t, err)
+	if err != nil {
+		t.Fatal(err)
+	}
 	t.Log(ret)
 }
 
 func TestMintNonFungible(t *testing.T) {
 	onlyTxMode(t)
 	ret, err := l.MintNonFungible(itemTokenContractId, tokenType, "Nobnyaga", "uwawa", toAddress)
-	assert.Nil(t, err)
+	if err != nil {
+		t.Fatal(err)
+	}
 	t.Log(ret)
 }
 
@@ -85,40 +97,52 @@ func TestUpdateNonFungibleInformation(t *testing.T) {
 func TestRetrieveTheHolderOfSpecificNonFungible(t *testing.T) {
 	onlyTxMode(t)
 	ret, err := l.RetrieveTheHolderOfSpecificNonFungible(itemTokenContractId, tokenType, "00000001")
-	assert.Nil(t, err)
+	if err != nil {
+		t.Fatal(err)
+	}
 	t.Log(ret)
 }
 
 func TestListTheChildrenOfNonFungible(t *testing.T) {
 	onlyTxMode(t)
 	ret, err := l.ListTheChildrenOfNonFungible(itemTokenContractId, tokenType, "00000001")
-	assert.Nil(t, err)
+	if err != nil {
+		t.Fatal(err)
+	}
 	t.Log(*ret[0])
 }
 
 func TestRetrieveTheParentOfNonFungible(t *testing.T) {
 	onlyTxMode(t)
 	ret, err := l.RetrieveTheParentOfNonFungible(itemTokenContractId, tokenType, "00000001")
-	assert.Nil(t, err)
+	if err != nil {
+		t.Fatal(err)
+	}
 	t.Log(ret)
 }
 func TestRetrieveTheRootOfNonFungible(t *testing.T) {
 	onlyTxMode(t)
 	ret, err := l.RetrieveTheRootOfNonFungible(itemTokenContractId, tokenType, "00000001")
-	assert.Nil(t, err)
+	if err != nil {
+		t.Fatal(err)
+	}
 	t.Log(ret)
 }
 
 func TestRetrieveTheStatusOfMultipleFungibleTokenIcons(t *testing.T) {
 	onlyTxMode(t)
 	ret, err := l.RetrieveTheStatusOfMultipleFungibleTokenIcons(itemTokenContractId, "63f34026-ffef-4dcf-a512-746f3e512378")
-	assert.Nil(t, err)
+	if err != nil {
+		t.Fatal(err)
+	}
 	t.Log(ret)
 }
 func TestRetrieveTheStatusOfMultipleNonFungibleTokenIcons(t *testing.T) {
 	onlyTxMode(t)
 	ret, err := l.RetrieveTheStatusOfMultipleNonFungibleTokenIcons(itemTokenContractId, "df6629c7-f1b6-4a82-81b4-6cc3083c2785")
-	assert.Nil(t, err)
+	if err != nil {
+		t.Fatal(err)
+	}
 	t.Log(ret)
 }
 
@@ -131,7 +155,9 @@ func TestUpdateMultipleNonFungibleTokenIcons(t *testing.T) {
 		},
 	}
 	ret, err := l.UpdateMultipleNonFungibleTokenIcons(itemTokenContractId, updateList)
-	assert.Nil(t, err)
+	if err != nil {
+		t.Fatal(err)
+	}
 	t.Log(ret)
 }
 
@@ -143,7 +169,9 @@ func TestUpdateMultipleFungibleTokenIcons(t *testing.T) {
 		},
 	}
 	ret, err := l.UpdateMultipleFungibleTokenIcons(itemTokenContractId, updateList)
-	assert.Nil(t, err)
+	if err != nil {
+		t.Fatal(err)
+	}
 	t.Log(ret)
 }
 
