@@ -35,7 +35,7 @@ func TestSign(t *testing.T) {
 	sig1 := l.Sign(ex1)
 	expected1 := "2LtyRNI16y/5/RdoTB65sfLkO0OSJ4pCuz2+ar0npkRbk1/dqq1fbt1FZo7fueQl1umKWWlBGu/53KD2cptcCA=="
 	if sig1 != expected1 {
-		t.Fatal("Request is not valid")
+		t.Fatal("Not equal")
 	}
 
 	// Example 3
@@ -50,7 +50,7 @@ func TestSign(t *testing.T) {
 	t.Log(sig2)
 	expected2 := "4L5BU0Ml/ejhzTg6Du12BDdElv8zoE7XD/iyOaZ2BHJIJG0SUOuCZWXu0YaF4i4C2CFJhjZoJFsje4CJn/wyyw=="
 	if sig2 != expected2 {
-		t.Fatal("Request is not valid")
+		t.Fatal("Not equal")
 	}
 }
 
