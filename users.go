@@ -614,9 +614,6 @@ type TransferDelegatedNonFungiblesRequest struct {
 	ToAddress    string         `json:"toAddress,omitempty"`
 	TransferList []TransferList `json:"transferList"`
 }
-type TransferList struct {
-	TokenId string `json:"tokenId"`
-}
 
 func (r TransferDelegatedNonFungiblesRequest) Encode() string {
 	base := r.Request.Encode()
