@@ -3,8 +3,6 @@ package lbd
 import (
 	"os"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestRetrieveTransactionInformation(t *testing.T) {
@@ -12,6 +10,8 @@ func TestRetrieveTransactionInformation(t *testing.T) {
 		t.Skip()
 	}
 	ret, err := l.RetrieveTransactionInformation(os.Getenv("TX_HASH"))
-	assert.Nil(t, err)
+	if err != nil {
+		t.Fatal(err)
+	}
 	t.Log(ret)
 }
