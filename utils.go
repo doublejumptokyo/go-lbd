@@ -234,3 +234,41 @@ func (l LBD) ListFungibleInformation(contractId string, tokenTypes []string) ([]
 	}
 	return all, nil
 }
+
+func (l LBD) UpdateMultipleNonFungibleTokenIconsCache(tokenIds []string, contractId string) error {
+	updateList := make([]*UpdateList, len(tokenIds))
+	for i, t := range tokenIds {
+		tt, ti := DivideId(t)
+		updateList[i] = &UpdateList{
+			TokenType:  tt,
+			TokenIndex: ti,
+		}
+	}
+
+	_, err := l.UpdateMultipleNonFungibleTokenIcons(contractId, updateList)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (l LBD) UpdateMultipleFungibleTokenIconsCache(tokenIds []string, contractId string) error {
+	updateList := make([]*UpdateFungibleList, len(tokenIds))
+	for i, t := range tokenIds {
+		tt, _ := DivideId(t)
+		updateList[i] = &UpdateFungibleList{
+			TokenType: tt,
+		}
+
+		_, err := l.UpdateMultipleFungibleTokenIcons(contractId, updateList)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func DivideId(tokenId string) (string, string) {
+	return tokenId[0:8], tokenId[8:16]
+}

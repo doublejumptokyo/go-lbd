@@ -235,3 +235,17 @@ func printTransactionHistory(t *testing.T, transactions []*Transaction) {
 		}
 	}
 }
+
+func TestUpdateMultipleNonFungibleTokenIconsCache(t *testing.T) {
+	err := l.UpdateMultipleNonFungibleTokenIconsCache([]string{tokenType + "00000001"}, itemTokenContractId)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestUdpateMultipleFungibleTokenIconsCache(t *testing.T) {
+	err := l.UpdateMultipleFungibleTokenIconsCache([]string{fungibleTokenType + "00000000"}, itemTokenContractId)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
