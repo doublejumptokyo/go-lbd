@@ -81,3 +81,107 @@ func (l *LBD) MintServiceToken(contractId string, to string, amount *big.Int) (*
 	}
 	return UnmarshalTransaction(resp.ResponseData)
 }
+
+func (r UpdateServiceTokenInformationRequest) Encode() string {
+	base := r.Request.Encode()
+	if r.Name != "" && r.Meta != "" {
+		return fmt.Sprintf("%s?meta=%s&name=%s&ownerAddress=%s&ownerSecret=%s", base, r.Meta, r.Name, r.OwnerAddress, r.OwnerSecret)
+	}
+	if r.Name == "" {
+		return fmt.Sprintf("%s?meta=%s&ownerAddress=%s&ownerSecret=%s", base, r.Meta, r.OwnerAddress, r.OwnerSecret)
+	}
+	return fmt.Sprintf("%s?name=%s&ownerAddress=%s&ownerSecret=%s", base, r.Name, r.OwnerAddress, r.OwnerSecret)
+}
+
+type UpdateServiceTokenInformationRequest struct {
+	*Request
+	OwnerAddress string `json:"ownerAddress"`
+	OwnerSecret  string `json:"ownerSecret"`
+	Name         string `json:"name,omitempty"`
+	Meta         string `json:"meta,omitempty"`
+}
+
+func (l *LBD) UpdateServiceTokenInformation(contractId, name, meta string) (*Transaction, error) {
+	path := fmt.Sprintf("/v1/service-tokens/%s", contractId)
+
+	r := UpdateServiceTokenInformationRequest{
+		Request:      NewPutRequest(path),
+		OwnerAddress: l.Owner.Address,
+		OwnerSecret:  l.Owner.Secret,
+	}
+
+	if name != "" {
+		r.Name = name
+	}
+
+	if meta != "" {
+		r.Meta = meta
+	}
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+
+	return UnmarshalTransaction(resp.ResponseData)
+}
+
+func (r BurnServiceTokenRequest) Encode() string {
+	base := r.Request.Encode()
+	if r.FromUserId != "" {
+		return fmt.Sprintf("%s?amount=%s&fromUserId=%s&ownerAddress=%s&ownerSecret=%s", base, r.Amount, r.FromUserId, r.OwnerAddress, r.OwnerSecret)
+	}
+	return fmt.Sprintf("%s?amount=%s&fromAddress=%s&ownerAddress=%s&ownerSecret=%s", base, r.Amount, r.FromAddress, r.OwnerAddress, r.OwnerSecret)
+}
+
+type BurnServiceTokenRequest struct {
+	*Request
+	OwnerAddress string `json:"ownerAddress"`
+	OwnerSecret  string `json:"ownerSecret"`
+	Amount       string `json:"amount"`
+	FromUserId   string `json:"fromUserId,omitempty"`
+	FromAddress  string `json:"fromAddress,omitempty"`
+}
+
+func (l *LBD) BurnServiceToken(contractId, from string, amount *big.Int) (*Transaction, error) {
+	path := fmt.Sprintf("/v1/service-tokens/%s/burn-from", contractId)
+
+	r := BurnServiceTokenRequest{
+		Request:      NewPostRequest(path),
+		OwnerAddress: l.Owner.Address,
+		OwnerSecret:  l.Owner.Secret,
+		Amount:       amount.String(),
+	}
+
+	if l.IsAddress(from) {
+		r.FromAddress = from
+	} else {
+		r.FromUserId = from
+	}
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+	return UnmarshalTransaction(resp.ResponseData)
+}
+
+type ServiceTokenHolders struct {
+	Address string `json:"address"`
+	UserID  string `json:"userId"`
+	Amount  string `json:"amount"`
+}
+
+func (l *LBD) ListAllServiceTokenHolders(contentId string) ([]*ServiceTokenHolders, error) {
+	path := fmt.Sprintf("/v1/service-tokens/%s/holders", contentId)
+
+	r := NewGetRequest(path)
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+
+	ret := []*ServiceTokenHolders{}
+	return ret, json.Unmarshal(resp.ResponseData, &ret)
+}

@@ -208,6 +208,10 @@ func NewPutRequest(path string) *Request {
 	return NewRequest("PUT", path)
 }
 
+func NewDeleteRequest(path string) *Request {
+	return NewRequest("DELETE", path)
+}
+
 func NewRequest(method, path string) *Request {
 	now := NowMsec()
 	return &Request{
