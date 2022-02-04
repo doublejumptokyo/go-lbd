@@ -3,23 +3,22 @@ package lbd
 import (
 	"os"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 var (
-	l                   = &LBD{}
-	serviceID           = os.Getenv("SERVICE_ID")
-	owner               = NewWallet(os.Getenv("OWNER_ADDR"), os.Getenv("OWNER_SECRET"))
-	itemTokenContractId = os.Getenv("ITEMTOKEN_CONTRACT_ID")
-	tokenType           = "10000001"
-	userId              = os.Getenv("USER_ID")
-	toAddress           = userId
-	sessionToken        = os.Getenv("SESSION")
+	l                      = &LBD{}
+	serviceID              = os.Getenv("SERVICE_ID")
+	owner                  = NewWallet(os.Getenv("OWNER_ADDR"), os.Getenv("OWNER_SECRET"))
+	itemTokenContractId    = os.Getenv("ITEMTOKEN_CONTRACT_ID")
+	serviceTokenContractId = os.Getenv("SERVICETOKEN_CONTRACT_ID")
+	tokenType              = "10000001"
+	fungibleTokenType      = "00000001"
+	userId                 = os.Getenv("USER_ID")
+	toAddress              = userId
+	sessionToken           = os.Getenv("SESSION")
 )
 
 func TestSign(t *testing.T) {
-	assert := assert.New(t)
 	// https://docs-blockchain.line.biz/api-guide/Authentication
 	key := "136db0ad-0fe1-456f-96a4-329be3f93036"
 	secret := "9256bf8a-2b86-42fe-b3e0-d3079d0141fe"
@@ -27,13 +26,17 @@ func TestSign(t *testing.T) {
 	timestamp := int64(1581850266351)
 
 	l, err := NewCashew(key, secret, nil)
-	assert.Nil(err)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	// Example 1
 	ex1 := &Request{nonce, timestamp, "GET", "/v1/wallets", nil}
 	sig1 := l.Sign(ex1)
 	expected1 := "2LtyRNI16y/5/RdoTB65sfLkO0OSJ4pCuz2+ar0npkRbk1/dqq1fbt1FZo7fueQl1umKWWlBGu/53KD2cptcCA=="
-	assert.Equal(sig1, expected1)
+	if sig1 != expected1 {
+		t.Fatal("Expected " + expected1 + " is not equal to actual " + sig1)
+	}
 
 	// Example 3
 	ex2 := &UpdateNonFungibleInformationRequest{
@@ -46,7 +49,9 @@ func TestSign(t *testing.T) {
 	sig2 := l.Sign(ex2)
 	t.Log(sig2)
 	expected2 := "4L5BU0Ml/ejhzTg6Du12BDdElv8zoE7XD/iyOaZ2BHJIJG0SUOuCZWXu0YaF4i4C2CFJhjZoJFsje4CJn/wyyw=="
-	assert.Equal(sig2, expected2)
+	if sig2 != expected2 {
+		t.Fatal("Expected " + expected2 + " is not equal to actual " + sig2)
+	}
 }
 
 func TestMain(m *testing.M) {
