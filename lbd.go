@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"context"
 	"crypto/hmac"
+	"crypto/rand"
 	"crypto/sha512"
 	"encoding/base64"
+	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"math/rand"
 	"net/http"
 	"strings"
 	"time"
@@ -31,7 +32,6 @@ var (
 	rsLetterIdxBits       = 6
 	rsLetterIdxMask int64 = 1<<rsLetterIdxBits - 1
 	rsLetterIdxMax        = 63 / rsLetterIdxBits
-	randSrc               = rand.NewSource(time.Now().UnixNano())
 )
 
 type RequestType string
@@ -272,13 +272,19 @@ func GenerateNonce(timestampMsec int64) string {
 	return randString(8)
 }
 
+func randInt63() int64 {
+	b := [8]byte{}
+	ct, _ := rand.Read(b[:])
+	return (int64)(binary.BigEndian.Uint64(b[:ct]) >> 1)
+}
+
 func randString(l int) string {
 	rsLetters := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	b := make([]byte, l)
-	cache, remain := randSrc.Int63(), rsLetterIdxMax
+	cache, remain := randInt63(), rsLetterIdxMax
 	for i := l - 1; i >= 0; {
 		if remain == 0 {
-			cache, remain = randSrc.Int63(), rsLetterIdxMax
+			cache, remain = randInt63(), rsLetterIdxMax
 		}
 		idx := int(cache & rsLetterIdxMask)
 		if idx < len(rsLetters) {
