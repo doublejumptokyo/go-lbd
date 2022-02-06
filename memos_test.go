@@ -4,8 +4,6 @@ import (
 	"os"
 	"testing"
 	"time"
-
-	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -16,7 +14,9 @@ var (
 func TestSaveText(t *testing.T) {
 	onlyTxMode(t)
 	ret, err := l.SaveText(memoMsg)
-	assert.Nil(t, err)
+	if err != nil {
+		t.Fatal(err)
+	}
 	t.Log(ret)
 }
 
@@ -26,8 +26,12 @@ func TestRetrieveText(t *testing.T) {
 	}
 	time.Sleep(2 * time.Second)
 	ret, err := l.RetrieveText(memoTxHash)
-	assert.Equal(t, memoMsg, ret.Memo)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if memoMsg != ret.Memo {
+		t.Fatalf("Not equal:\nexpencted: %s\nactual: %s\n", memoMsg, ret.Memo)
+	}
 
-	assert.Nil(t, err)
 	t.Log(ret)
 }
