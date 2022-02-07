@@ -7,7 +7,7 @@ import (
 
 func TestListAllFungibles(t *testing.T) {
 	onlyTxMode(t)
-	ret, err := l.ListAllFungibles(itemTokenContractId)
+	ret, err := l.ListAllFungibles(itemTokenContractId, 1)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -25,7 +25,7 @@ func TestRetrieveFungibleInformation(t *testing.T) {
 
 func TestRetrieveAllFungibleHolders(t *testing.T) {
 	onlyTxMode(t)
-	ret, err := l.RetrieveAllFungibleHolders(itemTokenContractId, fungibleTokenType)
+	ret, err := l.RetrieveAllFungibleHolders(itemTokenContractId, fungibleTokenType, 1)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -34,7 +34,7 @@ func TestRetrieveAllFungibleHolders(t *testing.T) {
 
 func TestListAllNonFungibles(t *testing.T) {
 	onlyTxMode(t)
-	ret, err := l.ListAllNonFungibles(itemTokenContractId)
+	ret, err := l.ListAllNonFungibles(itemTokenContractId, 1)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -105,7 +105,7 @@ func TestRetrieveTheHolderOfSpecificNonFungible(t *testing.T) {
 
 func TestListTheChildrenOfNonFungible(t *testing.T) {
 	onlyTxMode(t)
-	ret, err := l.ListTheChildrenOfNonFungible(itemTokenContractId, tokenType, "00000001")
+	ret, err := l.ListTheChildrenOfNonFungible(itemTokenContractId, tokenType, "00000001", 1)
 	if err != nil {
 		t.Fatal(err)
 	}
