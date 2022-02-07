@@ -48,7 +48,7 @@ func TestRetrieveBaseCoinBalance(t *testing.T) {
 }
 
 func TestRetrieveBalanceAllServiceTokens(t *testing.T) {
-	ret, err := l.RetrieveBalanceAllServiceTokens(owner.Address)
+	ret, err := l.RetrieveBalanceAllServiceTokens(owner.Address, 1)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -65,7 +65,7 @@ func TestRetrieveBalanceSpecificServiceTokenWallet(t *testing.T) {
 }
 
 func TestRetrieveBalanceAllFungibles(t *testing.T) {
-	ret, err := l.RetrieveBalanceAllFungibles(owner.Address, itemTokenContractId)
+	ret, err := l.RetrieveBalanceAllFungibles(owner.Address, itemTokenContractId, 1)
 	if err != nil {
 		t.Fatal(err)
 	}

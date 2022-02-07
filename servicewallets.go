@@ -107,63 +107,50 @@ func (l *LBD) TransferNonFungibleServiceWallet(walletAddress, walletSecret, cont
 	return UnmarshalTransaction(resp.ResponseData)
 }
 
-func (l *LBD) RetrieveBalanceOfAllNonFungiblesServiceWallet(walletAddress, contractId string) ([]*NonFungible, error) {
+func (l *LBD) RetrieveBalanceOfAllNonFungiblesServiceWallet(walletAddress, contractId string, page int) ([]*NonFungible, error) {
 	path := fmt.Sprintf("/v1/wallets/%s/item-tokens/%s/non-fungibles", walletAddress, contractId)
 
-	all := []*NonFungible{}
-	page := 1
-	for {
-		r := NewGetRequest(path)
-		r.pager.Page = page
-		r.pager.OrderBy = "asc"
-		resp, err := l.Do(r, true)
-		if err != nil {
-			return nil, err
-		}
-		ret := []*NonFungible{}
-		err = json.Unmarshal(resp.ResponseData, &ret)
-		if err != nil {
-			return nil, err
-		}
-		if len(ret) == 0 {
-			break
-		}
+	r := NewGetRequest(path)
+	r.pager.Page = page
+	r.pager.OrderBy = "asc"
 
-		all = append(all, ret...)
-		page++
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
 	}
-	return all, nil
+
+	ret := []*NonFungible{}
+	err = json.Unmarshal(resp.ResponseData, &ret)
+	if err != nil {
+		return nil, err
+	}
+
+	return ret, err
 }
 
-func (l LBD) RetrieveBalanceOfSpecificTypeOfNonFungiblesServiceWallet(walletAddress, contractId, tokenType string) ([]*NonFungibleToken, error) {
+func (l LBD) RetrieveBalanceOfSpecificTypeOfNonFungiblesServiceWallet(walletAddress, contractId, tokenType string, page int) ([]*NonFungibleToken, error) {
 	path := fmt.Sprintf("/v1/wallets/%s/item-tokens/%s/non-fungibles/%s", walletAddress, contractId, tokenType)
 
-	all := []*NonFungibleToken{}
-	page := 1
-	for {
-		r := NewGetRequest(path)
-		r.pager.Page = page
-		r.pager.OrderBy = "asc"
-		resp, err := l.Do(r, true)
-		if err != nil {
-			return nil, err
-		}
-		ret := []*NonFungibleToken{}
-		err = json.Unmarshal(resp.ResponseData, &ret)
-		if err != nil {
-			return nil, err
-		}
-		if len(ret) == 0 {
-			break
-		}
-		all = append(all, ret...)
-		page++
+	r := NewGetRequest(path)
+	r.pager.Page = page
+	r.pager.OrderBy = "asc"
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
 	}
 
-	for _, t := range all {
+	ret := []*NonFungibleToken{}
+	err = json.Unmarshal(resp.ResponseData, &ret)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, t := range ret {
 		t.TokenType = tokenType
 	}
-	return all, nil
+
+	return ret, err
 }
 
 // Retrieve
@@ -226,32 +213,25 @@ type RetrieveBalanceServiceTokensResponse struct {
 	ImgUri     string `json:"imgUri"`
 }
 
-func (l *LBD) RetrieveBalanceAllServiceTokens(walletAddress string) ([]*RetrieveBalanceServiceTokensResponse, error) {
+func (l *LBD) RetrieveBalanceAllServiceTokens(walletAddress string, page int) ([]*RetrieveBalanceServiceTokensResponse, error) {
 	path := fmt.Sprintf("/v1/wallets/%s/service-tokens", walletAddress)
 
-	all := []*RetrieveBalanceServiceTokensResponse{}
-	page := 1
-	for {
-		r := NewGetRequest(path)
-		r.pager.Page = page
-		r.pager.OrderBy = "asc"
-		resp, err := l.Do(r, true)
-		if err != nil {
-			return nil, err
-		}
-		ret := []*RetrieveBalanceServiceTokensResponse{}
-		err = json.Unmarshal(resp.ResponseData, &ret)
-		if err != nil {
-			return nil, err
-		}
-		if len(ret) == 0 {
-			break
-		}
-		all = append(all, ret...)
-		page++
+	r := NewGetRequest(path)
+	r.pager.Page = page
+	r.pager.OrderBy = "asc"
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
 	}
 
-	return all, nil
+	ret := []*RetrieveBalanceServiceTokensResponse{}
+	err = json.Unmarshal(resp.ResponseData, &ret)
+	if err != nil {
+		return nil, err
+	}
+
+	return ret, err
 }
 
 func (l *LBD) RetrieveBalanceSpecificServiceTokenWallet(walletAddress, contractId string) (*RetrieveBalanceServiceTokensResponse, error) {
@@ -273,32 +253,25 @@ type RetrieveBalanceFungibles struct {
 	Amount    string `json:"amount"`
 }
 
-func (l *LBD) RetrieveBalanceAllFungibles(walletAddress, contactId string) ([]*RetrieveBalanceFungibles, error) {
+func (l *LBD) RetrieveBalanceAllFungibles(walletAddress, contactId string, page int) ([]*RetrieveBalanceFungibles, error) {
 	path := fmt.Sprintf("/v1/wallets/%s/item-tokens/%s/fungibles", walletAddress, contactId)
 
-	all := []*RetrieveBalanceFungibles{}
-	page := 1
-	for {
-		r := NewGetRequest(path)
-		r.pager.Page = page
-		r.pager.OrderBy = "asc"
-		resp, err := l.Do(r, true)
-		if err != nil {
-			return nil, err
-		}
-		ret := []*RetrieveBalanceFungibles{}
-		err = json.Unmarshal(resp.ResponseData, &ret)
-		if err != nil {
-			return nil, err
-		}
-		if len(ret) == 0 {
-			break
-		}
-		all = append(all, ret...)
-		page++
+	r := NewGetRequest(path)
+	r.pager.Page = page
+	r.pager.OrderBy = "asc"
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
 	}
 
-	return all, nil
+	ret := []*RetrieveBalanceFungibles{}
+	err = json.Unmarshal(resp.ResponseData, &ret)
+	if err != nil {
+		return nil, err
+	}
+
+	return ret, err
 }
 
 func (l *LBD) RetrieveBalanceSpecificFungible(walletAddress, contractId, tokenType string) (*RetrieveBalanceFungibles, error) {
