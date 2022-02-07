@@ -43,11 +43,11 @@ type NonFungible struct {
 	NumberOfIndex string `json:"numberOfIndex"`
 }
 
-func (l LBD) RetrieveBalanceOfAllNonFungiblesUserWallet(userId, contractId string) ([]*NonFungible, error) {
+func (l LBD) RetrieveBalanceOfAllNonFungiblesUserWallet(userId, contractId string, page int) ([]*NonFungible, error) {
 	path := fmt.Sprintf("/v1/users/%s/item-tokens/%s/non-fungibles", userId, contractId)
 
 	r := NewGetRequest(path)
-	r.pager.Page = 1
+	r.pager.Page = page
 	r.pager.OrderBy = "asc"
 
 	resp, err := l.Do(r, true)
@@ -75,11 +75,11 @@ func (n *NonFungibleToken) ID() string {
 	return fmt.Sprintf("%s%08s", n.TokenType, n.TokenIndex)
 }
 
-func (l LBD) RetrieveBalanceOfSpecificTypeOfNonFungiblesUserWallet(userId, contractId, tokenType string) ([]*NonFungibleToken, error) {
+func (l LBD) RetrieveBalanceOfSpecificTypeOfNonFungiblesUserWallet(userId, contractId, tokenType string, page int) ([]*NonFungibleToken, error) {
 	path := fmt.Sprintf("/v1/users/%s/item-tokens/%s/non-fungibles/%s", userId, contractId, tokenType)
 
 	r := NewGetRequest(path)
-	r.pager.Page = 1
+	r.pager.Page = page
 	r.pager.OrderBy = "asc"
 
 	resp, err := l.Do(r, true)
@@ -272,11 +272,11 @@ type BalanceOfServiceTokens struct {
 	Amount     string `json:"amount"`
 }
 
-func (l LBD) RetrieveBalanceOfAllServiceTokensUserWallet(userId string) ([]*BalanceOfServiceTokens, error) {
+func (l LBD) RetrieveBalanceOfAllServiceTokensUserWallet(userId string, page int) ([]*BalanceOfServiceTokens, error) {
 	path := fmt.Sprintf("/v1/users/%s/service-tokens", userId)
 
 	r := NewGetRequest(path)
-	r.pager.Page = 1
+	r.pager.Page = page
 	r.pager.OrderBy = "asc"
 	resp, err := l.Do(r, true)
 	if err != nil {
@@ -311,11 +311,11 @@ type BalanceOfFungible struct {
 	Amount    string `json:"amount"`
 }
 
-func (l LBD) RetrieveBalanceOfAllFungiblesUserWallet(userId, contractId string) ([]*BalanceOfFungible, error) {
+func (l LBD) RetrieveBalanceOfAllFungiblesUserWallet(userId, contractId string, page int) ([]*BalanceOfFungible, error) {
 	path := fmt.Sprintf("/v1/users/%s/item-tokens/%s/fungibles", userId, contractId)
 
 	r := NewGetRequest(path)
-	r.pager.Page = 1
+	r.pager.Page = page
 	r.pager.OrderBy = "asc"
 
 	resp, err := l.Do(r, true)
