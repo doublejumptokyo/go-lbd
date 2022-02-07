@@ -46,28 +46,22 @@ type NonFungible struct {
 func (l LBD) RetrieveBalanceOfAllNonFungiblesUserWallet(userId, contractId string) ([]*NonFungible, error) {
 	path := fmt.Sprintf("/v1/users/%s/item-tokens/%s/non-fungibles", userId, contractId)
 
-	all := []*NonFungible{}
-	page := 1
-	for {
-		r := NewGetRequest(path)
-		r.pager.Page = page
-		r.pager.OrderBy = "asc"
-		resp, err := l.Do(r, true)
-		if err != nil {
-			return nil, err
-		}
-		ret := []*NonFungible{}
-		err = json.Unmarshal(resp.ResponseData, &ret)
-		if err != nil {
-			return nil, err
-		}
-		if len(ret) == 0 {
-			break
-		}
-		all = append(all, ret...)
-		page++
+	r := NewGetRequest(path)
+	r.pager.Page = 1
+	r.pager.OrderBy = "asc"
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
 	}
-	return all, nil
+
+	ret := []*NonFungible{}
+	err = json.Unmarshal(resp.ResponseData, &ret)
+	if err != nil {
+		return nil, err
+	}
+
+	return ret, err
 }
 
 type NonFungibleToken struct {
@@ -84,32 +78,22 @@ func (n *NonFungibleToken) ID() string {
 func (l LBD) RetrieveBalanceOfSpecificTypeOfNonFungiblesUserWallet(userId, contractId, tokenType string) ([]*NonFungibleToken, error) {
 	path := fmt.Sprintf("/v1/users/%s/item-tokens/%s/non-fungibles/%s", userId, contractId, tokenType)
 
-	all := []*NonFungibleToken{}
-	page := 1
-	for {
-		r := NewGetRequest(path)
-		r.pager.Page = page
-		r.pager.OrderBy = "asc"
-		resp, err := l.Do(r, true)
-		if err != nil {
-			return nil, err
-		}
-		ret := []*NonFungibleToken{}
-		err = json.Unmarshal(resp.ResponseData, &ret)
-		if err != nil {
-			return nil, err
-		}
-		all = append(all, ret...)
-		page++
-		if len(ret) < r.pager.Limit {
-			break
-		}
+	r := NewGetRequest(path)
+	r.pager.Page = 1
+	r.pager.OrderBy = "asc"
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
 	}
 
-	for _, t := range all {
-		t.TokenType = tokenType
+	ret := []*NonFungibleToken{}
+	err = json.Unmarshal(resp.ResponseData, &ret)
+	if err != nil {
+		return nil, err
 	}
-	return all, nil
+
+	return ret, err
 }
 
 type SessionToken struct {
@@ -291,28 +275,21 @@ type BalanceOfServiceTokens struct {
 func (l LBD) RetrieveBalanceOfAllServiceTokensUserWallet(userId string) ([]*BalanceOfServiceTokens, error) {
 	path := fmt.Sprintf("/v1/users/%s/service-tokens", userId)
 
-	all := []*BalanceOfServiceTokens{}
-	page := 1
-	for {
-		r := NewGetRequest(path)
-		r.pager.Page = page
-		r.pager.OrderBy = "asc"
-		resp, err := l.Do(r, true)
-		if err != nil {
-			return nil, err
-		}
-		ret := []*BalanceOfServiceTokens{}
-		err = json.Unmarshal(resp.ResponseData, &ret)
-		if err != nil {
-			return nil, err
-		}
-		all = append(all, ret...)
-		page++
-		if len(ret) < r.pager.Limit {
-			break
-		}
+	r := NewGetRequest(path)
+	r.pager.Page = 1
+	r.pager.OrderBy = "asc"
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
 	}
-	return all, nil
+
+	ret := []*BalanceOfServiceTokens{}
+	err = json.Unmarshal(resp.ResponseData, &ret)
+	if err != nil {
+		return nil, err
+	}
+
+	return ret, err
 }
 
 func (l LBD) RetrieveBalanceOfSpecificServiceTokenUserWallet(userId, contractId string) (*BalanceOfServiceTokens, error) {
@@ -337,28 +314,22 @@ type BalanceOfFungible struct {
 func (l LBD) RetrieveBalanceOfAllFungiblesUserWallet(userId, contractId string) ([]*BalanceOfFungible, error) {
 	path := fmt.Sprintf("/v1/users/%s/item-tokens/%s/fungibles", userId, contractId)
 
-	all := []*BalanceOfFungible{}
-	page := 1
-	for {
-		r := NewGetRequest(path)
-		r.pager.Page = page
-		r.pager.OrderBy = "asc"
-		resp, err := l.Do(r, true)
-		if err != nil {
-			return nil, err
-		}
-		ret := []*BalanceOfFungible{}
-		err = json.Unmarshal(resp.ResponseData, &ret)
-		if err != nil {
-			return nil, err
-		}
-		all = append(all, ret...)
-		page++
-		if len(ret) < r.pager.Limit {
-			break
-		}
+	r := NewGetRequest(path)
+	r.pager.Page = 1
+	r.pager.OrderBy = "asc"
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
 	}
-	return all, nil
+
+	ret := []*BalanceOfFungible{}
+	err = json.Unmarshal(resp.ResponseData, &ret)
+	if err != nil {
+		return nil, err
+	}
+
+	return ret, err
 }
 
 func (l LBD) RetrieveBalanceOfSpecificFungibleUserWallet(userId, contractId, tokenType string) (*BalanceOfFungible, error) {
