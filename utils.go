@@ -2,10 +2,14 @@ package lbd
 
 func (l LBD) RetrieveUserHoldersNonFungibles(userId string, contractId string) ([]*NonFungible, error) {
 	all := []*NonFungible{}
-	page := 1
+	pager := &Pager{
+		Page:    1,
+		OrderBy: "asc",
+		Limit:   DefaultLimit,
+	}
 
 	for {
-		ret, err := l.RetrieveBalanceOfAllNonFungiblesUserWallet(userId, contractId, page)
+		ret, err := l.RetrieveBalanceOfAllNonFungiblesUserWallet(userId, contractId, pager)
 		if err != nil {
 			return nil, err
 		}
@@ -13,7 +17,7 @@ func (l LBD) RetrieveUserHoldersNonFungibles(userId string, contractId string) (
 			break
 		}
 		all = append(all, ret...)
-		page++
+		pager.Page++
 	}
 
 	return all, nil
@@ -21,15 +25,19 @@ func (l LBD) RetrieveUserHoldersNonFungibles(userId string, contractId string) (
 
 func (l LBD) ListBalanceOfAllServiceTokensUserWallet(userId string) ([]*BalanceOfServiceTokens, error) {
 	all := []*BalanceOfServiceTokens{}
-	page := 1
+	pager := &Pager{
+		Page:    1,
+		OrderBy: "asc",
+		Limit:   DefaultLimit,
+	}
 
 	for {
-		ret, err := l.RetrieveBalanceOfAllServiceTokensUserWallet(userId, page)
+		ret, err := l.RetrieveBalanceOfAllServiceTokensUserWallet(userId, pager)
 		if err != nil {
 			return nil, err
 		}
 		all = append(all, ret...)
-		page++
+		pager.Page++
 		if len(ret) < DefaultLimit {
 			break
 		}
@@ -40,14 +48,19 @@ func (l LBD) ListBalanceOfAllServiceTokensUserWallet(userId string) ([]*BalanceO
 
 func (l LBD) RetrieveUserHoldersFungibles(userId, contractId string) ([]*BalanceOfFungible, error) {
 	all := []*BalanceOfFungible{}
-	page := 1
+	pager := &Pager{
+		Page:    1,
+		OrderBy: "asc",
+		Limit:   DefaultLimit,
+	}
+
 	for {
-		ret, err := l.RetrieveBalanceOfAllFungiblesUserWallet(userId, contractId, page)
+		ret, err := l.RetrieveBalanceOfAllFungiblesUserWallet(userId, contractId, pager)
 		if err != nil {
 			return nil, err
 		}
 		all = append(all, ret...)
-		page++
+		pager.Page++
 		if len(ret) < DefaultLimit {
 			break
 		}
@@ -58,15 +71,19 @@ func (l LBD) RetrieveUserHoldersFungibles(userId, contractId string) ([]*Balance
 
 func (l LBD) ListBalanceOfSpecificTypeOfNonFungiblesUserWallet(userId string, contractId, tokenType string) ([]*NonFungibleToken, error) {
 	all := []*NonFungibleToken{}
-	page := 1
+	pager := &Pager{
+		Page:    1,
+		OrderBy: "asc",
+		Limit:   DefaultLimit,
+	}
 
 	for {
-		ret, err := l.RetrieveBalanceOfSpecificTypeOfNonFungiblesUserWallet(userId, contractId, tokenType, page)
+		ret, err := l.RetrieveBalanceOfSpecificTypeOfNonFungiblesUserWallet(userId, contractId, tokenType, pager)
 		if err != nil {
 			return nil, err
 		}
 		all = append(all, ret...)
-		page++
+		pager.Page++
 		if len(ret) < DefaultLimit {
 			break
 		}
@@ -77,9 +94,14 @@ func (l LBD) ListBalanceOfSpecificTypeOfNonFungiblesUserWallet(userId string, co
 
 func (l LBD) RetrieveWalletAddressBalanceOfAllFungibleServiceWallet(walletAddress string, contractId string) ([]*RetrieveBalanceFungibles, error) {
 	all := []*RetrieveBalanceFungibles{}
-	page := 1
+	pager := &Pager{
+		Page:    1,
+		OrderBy: "asc",
+		Limit:   DefaultLimit,
+	}
+
 	for {
-		ret, err := l.RetrieveBalanceAllFungibles(walletAddress, contractId, page)
+		ret, err := l.RetrieveBalanceAllFungibles(walletAddress, contractId, pager)
 		if err != nil {
 			return nil, err
 		}
@@ -87,16 +109,21 @@ func (l LBD) RetrieveWalletAddressBalanceOfAllFungibleServiceWallet(walletAddres
 			break
 		}
 		all = append(all, ret...)
-		page++
+		pager.Page++
 	}
 	return all, nil
 }
 
 func (l LBD) RetrieveWalletAddressBalanceOfAllNonFungiblesServiceWallet(walletAddress string, contractId string) ([]*NonFungible, error) {
 	all := []*NonFungible{}
-	page := 1
+	pager := &Pager{
+		Page:    1,
+		OrderBy: "asc",
+		Limit:   DefaultLimit,
+	}
+
 	for {
-		ret, err := l.RetrieveBalanceOfAllNonFungiblesServiceWallet(walletAddress, contractId, page)
+		ret, err := l.RetrieveBalanceOfAllNonFungiblesServiceWallet(walletAddress, contractId, pager)
 		if err != nil {
 			return nil, err
 		}
@@ -104,16 +131,20 @@ func (l LBD) RetrieveWalletAddressBalanceOfAllNonFungiblesServiceWallet(walletAd
 			break
 		}
 		all = append(all, ret...)
-		page++
+		pager.Page++
 	}
 	return all, nil
 }
 
 func (l LBD) RetrieveWalletAddressBalanceOfSpecificTypeOfNonFungiblesServiceWallet(walletAddress, contractId, tokenType string) ([]*NonFungibleToken, error) {
 	all := []*NonFungibleToken{}
-	page := 1
+	pager := &Pager{
+		Page:    1,
+		OrderBy: "asc",
+		Limit:   DefaultLimit,
+	}
 	for {
-		ret, err := l.RetrieveBalanceOfSpecificTypeOfNonFungiblesServiceWallet(walletAddress, contractId, tokenType, page)
+		ret, err := l.RetrieveBalanceOfSpecificTypeOfNonFungiblesServiceWallet(walletAddress, contractId, tokenType, pager)
 		if err != nil {
 			return nil, err
 		}
@@ -121,16 +152,21 @@ func (l LBD) RetrieveWalletAddressBalanceOfSpecificTypeOfNonFungiblesServiceWall
 			break
 		}
 		all = append(all, ret...)
-		page++
+		pager.Page++
 	}
 	return all, nil
 }
 
 func (l LBD) ListWalletAddresseBalanceAllServiceTokens(walletAddress string) ([]*RetrieveBalanceServiceTokensResponse, error) {
 	all := []*RetrieveBalanceServiceTokensResponse{}
-	page := 1
+	pager := &Pager{
+		Page:    1,
+		OrderBy: "asc",
+		Limit:   DefaultLimit,
+	}
+
 	for {
-		ret, err := l.RetrieveBalanceAllServiceTokens(walletAddress, page)
+		ret, err := l.RetrieveBalanceAllServiceTokens(walletAddress, pager)
 		if err != nil {
 			return nil, err
 		}
@@ -138,16 +174,21 @@ func (l LBD) ListWalletAddresseBalanceAllServiceTokens(walletAddress string) ([]
 			break
 		}
 		all = append(all, ret...)
-		page++
+		pager.Page++
 	}
 	return all, nil
 }
 
 func (l LBD) ListAllFungiblesItemToken(contractId string) ([]*TokenType, error) {
 	all := []*TokenType{}
-	page := 1
+	pager := &Pager{
+		Page:    1,
+		OrderBy: "asc",
+		Limit:   DefaultLimit,
+	}
+
 	for {
-		ret, err := l.ListAllFungibles(contractId, page)
+		ret, err := l.ListAllFungibles(contractId, pager)
 		if err != nil {
 			return nil, err
 		}
@@ -155,16 +196,21 @@ func (l LBD) ListAllFungiblesItemToken(contractId string) ([]*TokenType, error) 
 			break
 		}
 		all = append(all, ret...)
-		page++
+		pager.Page++
 	}
 	return all, nil
 }
 
 func (l LBD) RetrieveAllFungibleHoldersItemToken(contractId, tokenType string) ([]*FungibleHolers, error) {
 	all := []*FungibleHolers{}
-	page := 1
+	pager := &Pager{
+		Page:    1,
+		OrderBy: "asc",
+		Limit:   DefaultLimit,
+	}
+
 	for {
-		ret, err := l.RetrieveAllFungibleHolders(contractId, tokenType, page)
+		ret, err := l.RetrieveAllFungibleHolders(contractId, tokenType, pager)
 		if err != nil {
 			return nil, err
 		}
@@ -172,21 +218,26 @@ func (l LBD) RetrieveAllFungibleHoldersItemToken(contractId, tokenType string) (
 			break
 		}
 		all = append(all, ret...)
-		page++
+		pager.Page++
 	}
 	return all, nil
 }
 
 func (l LBD) RetrieveHolderOfSpecificNonFungibleItemToken(contractId, tokenType string) ([]*Holder, error) {
 	all := []*Holder{}
-	page := 1
+	pager := &Pager{
+		Page:    1,
+		OrderBy: "asc",
+		Limit:   DefaultLimit,
+	}
+
 	for {
-		ret, err := l.RetrieveHolderOfSpecificNonFungible(contractId, tokenType, page)
+		ret, err := l.RetrieveHolderOfSpecificNonFungible(contractId, tokenType, pager)
 		if err != nil {
 			return nil, err
 		}
 		all = append(all, ret...)
-		page++
+		pager.Page++
 		if len(ret) < DefaultLimit {
 			break
 		}
@@ -196,9 +247,14 @@ func (l LBD) RetrieveHolderOfSpecificNonFungibleItemToken(contractId, tokenType 
 
 func (l LBD) ListTheChildrenOfNonFungibleItemToken(contractId, tokenType, tokenIndex string) ([]*NonFungibleInformation, error) {
 	all := []*NonFungibleInformation{}
-	page := 1
+	pager := &Pager{
+		Page:    1,
+		OrderBy: "asc",
+		Limit:   DefaultLimit,
+	}
+
 	for {
-		ret, err := l.ListTheChildrenOfNonFungible(contractId, tokenType, tokenIndex, page)
+		ret, err := l.ListTheChildrenOfNonFungible(contractId, tokenType, tokenIndex, pager)
 		if err != nil {
 			return nil, err
 		}
@@ -206,16 +262,21 @@ func (l LBD) ListTheChildrenOfNonFungibleItemToken(contractId, tokenType, tokenI
 			break
 		}
 		all = append(all, ret...)
-		page++
+		pager.Page++
 	}
 	return all, nil
 }
 
 func (l LBD) ListAllNonFungiblesItemToken(contractId string) ([]*TokenType, error) {
 	all := []*TokenType{}
-	page := 1
+	pager := &Pager{
+		Page:    1,
+		OrderBy: "asc",
+		Limit:   DefaultLimit,
+	}
+
 	for {
-		ret, err := l.ListAllNonFungibles(contractId, page)
+		ret, err := l.ListAllNonFungibles(contractId, pager)
 		if err != nil {
 			return nil, err
 		}
@@ -223,7 +284,7 @@ func (l LBD) ListAllNonFungiblesItemToken(contractId string) ([]*TokenType, erro
 			break
 		}
 		all = append(all, ret...)
-		page++
+		pager.Page++
 	}
 	return all, nil
 }

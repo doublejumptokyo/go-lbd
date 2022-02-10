@@ -43,12 +43,11 @@ type NonFungible struct {
 	NumberOfIndex string `json:"numberOfIndex"`
 }
 
-func (l LBD) RetrieveBalanceOfAllNonFungiblesUserWallet(userId, contractId string, page int) ([]*NonFungible, error) {
+func (l LBD) RetrieveBalanceOfAllNonFungiblesUserWallet(userId, contractId string, pager *Pager) ([]*NonFungible, error) {
 	path := fmt.Sprintf("/v1/users/%s/item-tokens/%s/non-fungibles", userId, contractId)
 
 	r := NewGetRequest(path)
-	r.pager.Page = page
-	r.pager.OrderBy = "asc"
+	r.pager = pager
 
 	resp, err := l.Do(r, true)
 	if err != nil {
@@ -75,12 +74,11 @@ func (n *NonFungibleToken) ID() string {
 	return fmt.Sprintf("%s%08s", n.TokenType, n.TokenIndex)
 }
 
-func (l LBD) RetrieveBalanceOfSpecificTypeOfNonFungiblesUserWallet(userId, contractId, tokenType string, page int) ([]*NonFungibleToken, error) {
+func (l LBD) RetrieveBalanceOfSpecificTypeOfNonFungiblesUserWallet(userId, contractId, tokenType string, pager *Pager) ([]*NonFungibleToken, error) {
 	path := fmt.Sprintf("/v1/users/%s/item-tokens/%s/non-fungibles/%s", userId, contractId, tokenType)
 
 	r := NewGetRequest(path)
-	r.pager.Page = page
-	r.pager.OrderBy = "asc"
+	r.pager = pager
 
 	resp, err := l.Do(r, true)
 	if err != nil {
@@ -272,12 +270,12 @@ type BalanceOfServiceTokens struct {
 	Amount     string `json:"amount"`
 }
 
-func (l LBD) RetrieveBalanceOfAllServiceTokensUserWallet(userId string, page int) ([]*BalanceOfServiceTokens, error) {
+func (l LBD) RetrieveBalanceOfAllServiceTokensUserWallet(userId string, pager *Pager) ([]*BalanceOfServiceTokens, error) {
 	path := fmt.Sprintf("/v1/users/%s/service-tokens", userId)
 
 	r := NewGetRequest(path)
-	r.pager.Page = page
-	r.pager.OrderBy = "asc"
+	r.pager = pager
+
 	resp, err := l.Do(r, true)
 	if err != nil {
 		return nil, err
@@ -311,12 +309,11 @@ type BalanceOfFungible struct {
 	Amount    string `json:"amount"`
 }
 
-func (l LBD) RetrieveBalanceOfAllFungiblesUserWallet(userId, contractId string, page int) ([]*BalanceOfFungible, error) {
+func (l LBD) RetrieveBalanceOfAllFungiblesUserWallet(userId, contractId string, pager *Pager) ([]*BalanceOfFungible, error) {
 	path := fmt.Sprintf("/v1/users/%s/item-tokens/%s/fungibles", userId, contractId)
 
 	r := NewGetRequest(path)
-	r.pager.Page = page
-	r.pager.OrderBy = "asc"
+	r.pager = pager
 
 	resp, err := l.Do(r, true)
 	if err != nil {

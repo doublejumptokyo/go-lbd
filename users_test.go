@@ -81,7 +81,12 @@ func TestRetrieveBaseCoinBalanceUserWallet(t *testing.T) {
 }
 
 func TestRetrieveBalanceOfAllServiceTokensUserWallet(t *testing.T) {
-	ret, err := l.RetrieveBalanceOfAllServiceTokensUserWallet(userId, 1)
+	pager := &Pager{
+		Page:    1,
+		OrderBy: "asc",
+		Limit:   DefaultLimit,
+	}
+	ret, err := l.RetrieveBalanceOfAllServiceTokensUserWallet(userId, pager)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -97,7 +102,12 @@ func TestRetrieveBalanceOfSpecificServiceTokenUserWallet(t *testing.T) {
 }
 
 func TestRetrieveBalanceOfAllFungiblesUserWallet(t *testing.T) {
-	ret, err := l.RetrieveBalanceOfAllFungiblesUserWallet(userId, itemTokenContractId, 1)
+	pager := &Pager{
+		Page:    1,
+		OrderBy: "asc",
+		Limit:   DefaultLimit,
+	}
+	ret, err := l.RetrieveBalanceOfAllFungiblesUserWallet(userId, itemTokenContractId, pager)
 	if err != nil {
 		t.Fatal(err)
 	}
