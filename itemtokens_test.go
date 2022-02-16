@@ -7,7 +7,12 @@ import (
 
 func TestListAllFungibles(t *testing.T) {
 	onlyTxMode(t)
-	ret, err := l.ListAllFungibles(itemTokenContractId)
+	pager := &Pager{
+		Page:    1,
+		OrderBy: "asc",
+		Limit:   DefaultLimit,
+	}
+	ret, err := l.ListAllFungibles(itemTokenContractId, pager)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -25,7 +30,12 @@ func TestRetrieveFungibleInformation(t *testing.T) {
 
 func TestRetrieveAllFungibleHolders(t *testing.T) {
 	onlyTxMode(t)
-	ret, err := l.RetrieveAllFungibleHolders(itemTokenContractId, fungibleTokenType)
+	pager := &Pager{
+		Page:    1,
+		OrderBy: "asc",
+		Limit:   DefaultLimit,
+	}
+	ret, err := l.RetrieveAllFungibleHolders(itemTokenContractId, fungibleTokenType, pager)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -34,7 +44,12 @@ func TestRetrieveAllFungibleHolders(t *testing.T) {
 
 func TestListAllNonFungibles(t *testing.T) {
 	onlyTxMode(t)
-	ret, err := l.ListAllNonFungibles(itemTokenContractId)
+	pager := &Pager{
+		Page:    1,
+		OrderBy: "asc",
+		Limit:   DefaultLimit,
+	}
+	ret, err := l.ListAllNonFungibles(itemTokenContractId, pager)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -105,7 +120,12 @@ func TestRetrieveTheHolderOfSpecificNonFungible(t *testing.T) {
 
 func TestListTheChildrenOfNonFungible(t *testing.T) {
 	onlyTxMode(t)
-	ret, err := l.ListTheChildrenOfNonFungible(itemTokenContractId, tokenType, "00000001")
+	pager := &Pager{
+		Page:    1,
+		OrderBy: "asc",
+		Limit:   DefaultLimit,
+	}
+	ret, err := l.ListTheChildrenOfNonFungible(itemTokenContractId, tokenType, "00000001", pager)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -81,31 +81,24 @@ type Token struct {
 	BurnedAt   int64  `json:"burnedAt"`
 }
 
-func (l LBD) ListAllFungibles(contractId string) ([]*TokenType, error) {
+func (l LBD) ListAllFungibles(contractId string, pager *Pager) ([]*TokenType, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/fungibles", contractId)
 
-	all := []*TokenType{}
-	page := 1
-	for {
-		r := NewGetRequest(path)
-		r.pager.Page = page
-		r.pager.OrderBy = "asc"
-		resp, err := l.Do(r, true)
-		if err != nil {
-			return nil, err
-		}
-		ret := []*TokenType{}
-		err = json.Unmarshal(resp.ResponseData, &ret)
-		if err != nil {
-			return nil, err
-		}
-		if len(ret) == 0 {
-			break
-		}
-		all = append(all, ret...)
-		page++
+	r := NewGetRequest(path)
+	r.pager = pager
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
 	}
-	return all, nil
+
+	ret := []*TokenType{}
+	err = json.Unmarshal(resp.ResponseData, &ret)
+	if err != nil {
+		return nil, err
+	}
+
+	return ret, err
 }
 
 type FungibleInformation struct {
@@ -135,58 +128,44 @@ type FungibleHolers struct {
 	Amount        string `json:"amount"`
 }
 
-func (l LBD) RetrieveAllFungibleHolders(contractId, tokenType string) ([]*FungibleHolers, error) {
+func (l LBD) RetrieveAllFungibleHolders(contractId, tokenType string, pager *Pager) ([]*FungibleHolers, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/fungibles/%s/holders", contractId, tokenType)
 
-	all := []*FungibleHolers{}
-	page := 1
-	for {
-		r := NewGetRequest(path)
-		r.pager.Page = page
-		r.pager.OrderBy = "asc"
-		resp, err := l.Do(r, true)
-		if err != nil {
-			return nil, err
-		}
-		ret := []*FungibleHolers{}
-		err = json.Unmarshal(resp.ResponseData, &ret)
-		if err != nil {
-			return nil, err
-		}
-		if len(ret) == 0 {
-			break
-		}
-		all = append(all, ret...)
-		page++
+	r := NewGetRequest(path)
+	r.pager = pager
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
 	}
-	return all, nil
+
+	ret := []*FungibleHolers{}
+	err = json.Unmarshal(resp.ResponseData, &ret)
+	if err != nil {
+		return nil, err
+	}
+
+	return ret, err
 }
 
-func (l LBD) ListAllNonFungibles(contractId string) ([]*TokenType, error) {
+func (l LBD) ListAllNonFungibles(contractId string, pager *Pager) ([]*TokenType, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles", contractId)
 
-	all := []*TokenType{}
-	page := 1
-	for {
-		r := NewGetRequest(path)
-		r.pager.Page = page
-		r.pager.OrderBy = "asc"
-		resp, err := l.Do(r, true)
-		if err != nil {
-			return nil, err
-		}
-		ret := []*TokenType{}
-		err = json.Unmarshal(resp.ResponseData, &ret)
-		if err != nil {
-			return nil, err
-		}
-		if len(ret) == 0 {
-			break
-		}
-		all = append(all, ret...)
-		page++
+	r := NewGetRequest(path)
+	r.pager = pager
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
 	}
-	return all, nil
+
+	ret := []*TokenType{}
+	err = json.Unmarshal(resp.ResponseData, &ret)
+	if err != nil {
+		return nil, err
+	}
+
+	return ret, err
 }
 
 type CreateNonFungibleRequest struct {
@@ -289,31 +268,21 @@ type Holder struct {
 	NumberOfIndex string  `json:"numberOfIndex"`
 }
 
-func (l LBD) RetrieveHolderOfSpecificNonFungible(contractId, tokenType string) ([]*Holder, error) {
+func (l LBD) RetrieveHolderOfSpecificNonFungible(contractId, tokenType string, pager *Pager) ([]*Holder, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/%s/holders", contractId, tokenType)
 
-	all := []*Holder{}
-	page := 1
-	for {
-		r := NewGetRequest(path)
-		r.pager.Page = page
-		r.pager.OrderBy = "asc"
-		resp, err := l.Do(r, true)
-		if err != nil {
-			return nil, err
-		}
-		ret := []*Holder{}
-		err = json.Unmarshal(resp.ResponseData, &ret)
-		if err != nil {
-			return nil, err
-		}
-		all = append(all, ret...)
-		page++
-		if len(ret) < r.pager.Limit {
-			break
-		}
+	r := NewGetRequest(path)
+	r.pager = pager
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
 	}
-	return all, nil
+
+	ret := []*Holder{}
+	err = json.Unmarshal(resp.ResponseData, &ret)
+
+	return ret, err
 }
 
 type ItemTokenHolder struct {
@@ -335,31 +304,24 @@ func (l LBD) RetrieveTheHolderOfSpecificNonFungible(contractId, tokenType, token
 	return ret, json.Unmarshal(resp.ResponseData, ret)
 }
 
-func (l LBD) ListTheChildrenOfNonFungible(contractId, tokenType, tokenIndex string) ([]*NonFungibleInformation, error) {
+func (l LBD) ListTheChildrenOfNonFungible(contractId, tokenType, tokenIndex string, pager *Pager) ([]*NonFungibleInformation, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/%s/%s/children", contractId, tokenType, tokenIndex)
 
-	all := []*NonFungibleInformation{}
-	page := 1
-	for {
-		r := NewGetRequest(path)
-		r.pager.Page = page
-		r.pager.OrderBy = "asc"
-		resp, err := l.Do(r, true)
-		if err != nil {
-			return nil, err
-		}
-		ret := []*NonFungibleInformation{}
-		err = json.Unmarshal(resp.ResponseData, &ret)
-		if err != nil {
-			return nil, err
-		}
-		if len(ret) == 0 {
-			break
-		}
-		all = append(all, ret...)
-		page++
+	r := NewGetRequest(path)
+	r.pager = pager
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
 	}
-	return all, nil
+
+	ret := []*NonFungibleInformation{}
+	err = json.Unmarshal(resp.ResponseData, &ret)
+	if err != nil {
+		return nil, err
+	}
+
+	return ret, err
 }
 
 type ParentNonFungible struct {
