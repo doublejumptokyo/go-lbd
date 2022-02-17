@@ -1,16 +1,6 @@
 name: go-test
 on: 
   - pull_request
-env:
-  API_KEY: ${{secrets.API_KEY}}
-  API_SECRET: ${{secrets.API_SECRET}}
-  SERVICE_ID: ${{secrets.SERVICE_ID}}
-  OWNER_ADDR: ${{secrets.OWNER_ADDR}}
-  OWNER_SECRET: ${{secrets.OWNER_SECRET}}
-  SERVICETOKEN_CONTRACT_ID: ${{secrets.SERVICETOKEN_CONTRACT_ID}}
-  ITEMTOKEN_CONTRACT_ID: ${{secrets.ITEMTOKEN_CONTRACT_ID}}
-  USER_ID: ${{secrets.USER_ID}}
-  TX: ${{secrets.TX}}
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -30,3 +20,13 @@ jobs:
             ${{ runner.os }}-go-
       - name: Test
         run: go test ./...
+        env:
+            API_KEY: ${{secrets.API_KEY}}
+            API_SECRET: ${{secrets.API_SECRET}}
+            SERVICE_ID: ${{secrets.SERVICE_ID}}
+            OWNER_ADDR: ${{secrets.OWNER_ADDR}}
+            OWNER_SECRET: ${{secrets.OWNER_SECRET}}
+            SERVICETOKEN_CONTRACT_ID: ${{secrets.SERVICETOKEN_CONTRACT_ID}}
+            ITEMTOKEN_CONTRACT_ID: ${{secrets.ITEMTOKEN_CONTRACT_ID}}
+            USER_ID: ${{secrets.USER_ID}}
+            TX: ${{secrets.TX}}
