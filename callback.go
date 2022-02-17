@@ -1,6 +1,6 @@
 package lbd
 
-func ConstractRawTransaction(raw []byte) (*Transaction, error) {
+func ConstructRawTransaction(raw []byte) (*Transaction, error) {
 	ret, err := UnmarshalTransaction(raw)
 	if err != nil {
 		return nil, err
