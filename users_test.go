@@ -40,15 +40,15 @@ func TestFuncTransferNonFungibleUserWallet(t *testing.T) {
 	t.Log(ret)
 }
 
-func TestIssueSessionTokenForProxySetting(t *testing.T) {
-	onlyTxMode(t)
-	ret, err := l.IssueSessionTokenForProxySetting(userId, itemTokenContractId, RequestTypeAOA)
-	if err != nil {
-		t.Fatal(err)
-	}
-	sessionToken = ret.RequestSessionToken
-	t.Log(ret)
-}
+// func TestIssueSessionTokenForProxySetting(t *testing.T) {
+// 	onlyTxMode(t)
+// 	ret, err := l.IssueSessionTokenForProxySetting(userId, itemTokenContractId, RequestTypeAOA)
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// 	sessionToken = ret.RequestSessionToken
+// 	t.Log(ret)
+// }
 
 func TestRetrieveSessionTokenStatus(t *testing.T) {
 	if sessionToken == "" {
@@ -130,13 +130,13 @@ func TestRetrieveBalanceOfNonFungiblesWithTokenTypeUserWallet(t *testing.T) {
 	t.Log(ret)
 }
 
-func TestRetrieveBalanceOfSpecificNonFungibleUserWallet(t *testing.T) {
-	ret, err := l.RetrieveBalanceOfSpecificNonFungibleUserWallet(userId, itemTokenContractId, tokenType, "00000001")
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Log(ret)
-}
+// func TestRetrieveBalanceOfSpecificNonFungibleUserWallet(t *testing.T) {
+// 	ret, err := l.RetrieveBalanceOfSpecificNonFungibleUserWallet(userId, itemTokenContractId, tokenType, "00000001")
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// 	t.Log(ret)
+// }
 
 func TestRetrieveWhetherTheServiceTokenProxySet(t *testing.T) {
 	ret, err := l.RetrieveWhetherTheServiceTokenProxySet(userId, serviceTokenContractId)

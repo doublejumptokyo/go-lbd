@@ -83,13 +83,13 @@ func TestRetrieveBalanceAllFungibles(t *testing.T) {
 	t.Log(*ret[0])
 }
 
-func TestRetrieveBalanceSpecificFungible(t *testing.T) {
-	ret, err := l.RetrieveBalanceSpecificFungible(owner.Address, itemTokenContractId, tokenType)
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Log(ret)
-}
+// func TestRetrieveBalanceSpecificFungible(t *testing.T) {
+// 	ret, err := l.RetrieveBalanceSpecificFungible(owner.Address, itemTokenContractId, tokenType)
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// 	t.Log(ret)
+// }
 
 func TestRetrieveBalanceSpecificNonFungible(t *testing.T) {
 	ret, err := l.RetrieveBalanceSpecificNonFungible(owner.Address, itemTokenContractId, tokenType, "00000001")
