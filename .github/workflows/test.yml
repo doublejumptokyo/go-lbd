@@ -1,0 +1,32 @@
+name: go-test
+on: 
+  - pull_request
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: ^1.13
+      - name: cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Test
+        run: go test ./...
+        env:
+          API_KEY: ${{secrets.API_KEY}}
+          API_SECRET: ${{secrets.API_SECRET}}
+          SERVICE_ID: ${{secrets.SERVICE_ID}}
+          OWNER_ADDR: ${{secrets.OWNER_ADDR}}
+          OWNER_SECRET: ${{secrets.OWNER_SECRET}}
+          SERVICETOKEN_CONTRACT_ID: ${{secrets.SERVICETOKEN_CONTRACT_ID}}
+          ITEMTOKEN_CONTRACT_ID: ${{secrets.ITEMTOKEN_CONTRACT_ID}}
+          USER_ID: ${{secrets.USER_ID}}
+          TX: ${{secrets.TX}}
