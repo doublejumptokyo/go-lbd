@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
+	"net/url"
+	"strconv"
 	"strings"
 )
 
@@ -370,10 +372,15 @@ type BalanceOfNonFungiblesToken struct {
 
 func (l LBD) RetrieveBalanceOfNonFungiblesWithTokenTypeUserWallet(userId, contractId, orderBy, pageToken string, limit uint32) (*BalanceOfNonFungiblesTokenType, error) {
 	var r *Request
+
+	q := url.Values{}
+	q.Add("limit", strconv.Itoa(int(limit)))
+	q.Add("orderBy", orderBy)
 	if pageToken == "" {
-		r = NewGetRequest(fmt.Sprintf("/v1/users/%s/item-tokens/%s/non-fungibles/with-type?limit=%d&orderBy=%s", userId, contractId, limit, orderBy))
+		r = NewGetRequestWithQuery(fmt.Sprintf("/v1/users/%s/item-tokens/%s/non-fungibles/with-type", userId, contractId), q)
 	} else {
-		r = NewGetRequest(fmt.Sprintf("/v1/users/%s/item-tokens/%s/non-fungibles/with-type?limit=%d&orderBy=%s&pageToken=%s", userId, contractId, limit, orderBy, pageToken))
+		q.Add("pageToken", pageToken)
+		r = NewGetRequestWithQuery(fmt.Sprintf("/v1/users/%s/item-tokens/%s/non-fungibles/with-type", userId, contractId), q)
 	}
 	resp, err := l.Do(r, true)
 	if err != nil {
