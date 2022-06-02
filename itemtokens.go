@@ -955,10 +955,26 @@ func (l *LBD) MintMultipleNonFungibleRecipients(contractId string, mintList []*M
 	return UnmarshalTransaction(resp.ResponseData)
 }
 
+func (r NonFungibleTokenBurnRequest) Encode() string {
+	base := r.Request.Encode()
+	if r.FromUserId != "" {
+		return fmt.Sprintf("%s?fromUserId=%s&ownerAddress=%s&ownerSecret=%s", base, r.FromUserId, r.OwnerAddress, r.OwnerSecret)
+	}
+	return fmt.Sprintf("%s?fromAddress=%s&ownerAddress=%s&ownerSecret=%s", base, r.FromAddress, r.OwnerAddress, r.OwnerSecret)
+}
+
+type NonFungibleTokenBurnRequest struct {
+	*Request
+	OwnerAddress string `json:"ownerAddress"`
+	OwnerSecret  string `json:"ownerSecret"`
+	FromUserId   string `json:"fromUserId,omitempty"`
+	FromAddress  string `json:"fromAddress,omitempty"`
+}
+
 func (l *LBD) BurnNonFungible(contractId, tokenType, tokenIndex, from string) (*Transaction, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/%s/%s/burn", contractId, tokenType, tokenIndex)
 
-	r := BurnItemTokenRequest{
+	r := NonFungibleTokenBurnRequest{
 		Request:      NewPostRequest(path),
 		OwnerAddress: l.Owner.Address,
 		OwnerSecret:  l.Owner.Secret,
