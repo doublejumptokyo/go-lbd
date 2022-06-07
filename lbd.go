@@ -12,6 +12,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
+	"sort"
 	"strings"
 	"time"
 )
@@ -125,6 +127,10 @@ func (l *LBD) Do(r Requester, sign bool) (*Response, error) {
 	req.Header.Add("service-api-key", l.apiKey)
 	req.Header.Add("Content-Type", "application/json")
 
+	if r.HasQuery() {
+		req.URL.RawQuery = r.Query().Encode()
+	}
+
 	if sign {
 		sig := l.Sign(r)
 		req.Header.Add("nonce", r.Nonce())
@@ -174,6 +180,9 @@ type Requester interface {
 	Nonce() string
 	Timestamp() string
 	Encode() string
+	HasQuery() bool
+	Query() url.Values
+	RawQuery() string
 }
 
 type Request struct {
@@ -182,6 +191,7 @@ type Request struct {
 	method    string
 	path      string
 	pager     *Pager
+	query     *url.Values
 }
 
 type Pager struct {
@@ -197,6 +207,12 @@ func NewGetRequest(path string) *Request {
 		Page:    1,
 		OrderBy: "desc",
 	}
+	return req
+}
+
+func NewGetRequestWithQuery(path string, query url.Values) *Request {
+	req := NewRequest("GET", path)
+	req.query = &query
 	return req
 }
 
@@ -238,6 +254,34 @@ func (r *Request) Path() string {
 	return r.path
 }
 
+func (r *Request) HasQuery() bool {
+	return r.query != nil
+}
+
+func (r *Request) Query() url.Values {
+	if r.HasQuery() {
+		return *r.query
+	}
+	return nil
+}
+
+func (r *Request) RawQuery() string {
+	q := r.Query()
+	keys := make([]string, 0, len(q))
+	for k := range q {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	var params []string
+	for _, k := range keys {
+		qs := q[k]
+		for _, q := range qs {
+			params = append(params, fmt.Sprintf("%s=%s", k, q))
+		}
+	}
+	return strings.Join(params, "&")
+}
+
 func (r *Request) Nonce() string {
 	return r.nonce
 }
@@ -247,12 +291,11 @@ func (r *Request) Timestamp() string {
 }
 
 func (r *Request) Encode() string {
-	ret := fmt.Sprintf("%s%s%s%s", r.Nonce(), r.Timestamp(), r.method, r.URI())
-
-	// if r.pager != nil {
-	// 	ret = fmt.Sprintf("%s?limit=%d&orderBy=%s&page=%d", ret, r.pager.Limit, r.pager.OrderBy, r.pager.Page)
-	// }
-	return ret
+	if r.HasQuery() {
+		// query string must not be URL encoded when signing
+		return fmt.Sprintf("%s%s%s%s?%s", r.Nonce(), r.Timestamp(), r.method, r.URI(), r.RawQuery())
+	}
+	return fmt.Sprintf("%s%s%s%s", r.Nonce(), r.Timestamp(), r.method, r.URI())
 }
 
 type Response struct {
