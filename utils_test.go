@@ -58,8 +58,8 @@ func TestRetrieveWalletAddressBalanceOfAllFungibleServiceWallet(t *testing.T) {
 	t.Log(ret)
 }
 
-func TestListWalletAddresseBalanceAllServiceTokens(t *testing.T) {
-	ret, err := l.ListWalletAddresseBalanceAllServiceTokens(owner.Address)
+func TestListWalletAddressBalanceAllServiceTokens(t *testing.T) {
+	ret, err := l.ListWalletAddressBalanceAllServiceTokens(owner.Address)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -113,7 +113,7 @@ func TestUpdateMultipleNonFungibleTokenIconsCache(t *testing.T) {
 	}
 }
 
-func TestUdpateMultipleFungibleTokenIconsCache(t *testing.T) {
+func TestUpdateMultipleFungibleTokenIconsCache(t *testing.T) {
 	err := l.UpdateMultipleFungibleTokenIconsCache([]string{fungibleTokenType + "00000000"}, itemTokenContractId)
 	if err != nil {
 		t.Fatal(err)

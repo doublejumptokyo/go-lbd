@@ -153,13 +153,13 @@ func (l LBD) RetrieveBalanceOfSpecificTypeOfNonFungiblesServiceWallet(walletAddr
 
 // Retrieve
 
-type WalletInfomation struct {
+type WalletInformation struct {
 	Name          string `json:"name"`
 	WalletAddress string `json:"walletAddress"`
 	CreatedAt     int64  `json:"createdAt"`
 }
 
-func (l *LBD) RetrieveServiceWalletInformation(walletAddress string) (*WalletInfomation, error) {
+func (l *LBD) RetrieveServiceWalletInformation(walletAddress string) (*WalletInformation, error) {
 	path := fmt.Sprintf("/v1/wallets/%s", walletAddress)
 
 	r := NewGetRequest(path)
@@ -167,7 +167,7 @@ func (l *LBD) RetrieveServiceWalletInformation(walletAddress string) (*WalletInf
 	if err != nil {
 		return nil, err
 	}
-	ret := new(WalletInfomation)
+	ret := new(WalletInformation)
 	return ret, json.Unmarshal(resp.ResponseData, ret)
 }
 
