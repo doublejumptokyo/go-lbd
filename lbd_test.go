@@ -31,7 +31,7 @@ func TestSign(t *testing.T) {
 	}
 
 	// Example 1
-	ex1 := &Request{nonce, timestamp, "GET", "/v1/wallets", nil}
+	ex1 := &Request{nonce, timestamp, "GET", "/v1/wallets", nil, nil}
 	sig1 := l.Sign(ex1)
 	expected1 := "2LtyRNI16y/5/RdoTB65sfLkO0OSJ4pCuz2+ar0npkRbk1/dqq1fbt1FZo7fueQl1umKWWlBGu/53KD2cptcCA=="
 	if sig1 != expected1 {
@@ -40,7 +40,7 @@ func TestSign(t *testing.T) {
 
 	// Example 3
 	ex2 := &UpdateNonFungibleInformationRequest{
-		Request:      &Request{nonce, timestamp, "PUT", "/v1/item-tokens/61e14383/non-fungibles/10000001/00000001", nil},
+		Request:      &Request{nonce, timestamp, "PUT", "/v1/item-tokens/61e14383/non-fungibles/10000001/00000001", nil, nil},
 		OwnerAddress: "tlink1fr9mpexk5yq3hu6jc0npajfsa0x7tl427fuveq",
 		OwnerSecret:  "uhbdnNvIqQFnnIFDDG8EuVxtqkwsLtDR/owKInQIYmo=",
 		Name:         "NewName",

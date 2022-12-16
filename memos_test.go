@@ -30,7 +30,7 @@ func TestRetrieveText(t *testing.T) {
 		t.Fatal(err)
 	}
 	if memoMsg != ret.Memo {
-		t.Fatalf("Not equal:\nexpencted: %s\nactual: %s\n", memoMsg, ret.Memo)
+		t.Fatalf("not equal:\nexpected: %s\nactual: %s\n", memoMsg, ret.Memo)
 	}
 
 	t.Log(ret)
