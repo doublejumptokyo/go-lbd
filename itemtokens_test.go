@@ -308,3 +308,93 @@ func TestBurnNonFungible(t *testing.T) {
 	}
 	t.Log(ret)
 }
+
+func TestRetrieveFungibleTokenMediaResourceStatus(t *testing.T) {
+	onlyTxMode(t)
+
+	ret, err := l.RetrieveFungibleTokenMediaResourceStatus(itemTokenContractId, "63f34026-ffef-4dcf-a512-746f3e512378")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(ret)
+}
+
+func TestRetrieveFungibleTokenThumbnailStatus(t *testing.T) {
+
+	ret, err := l.RetrieveFungibleTokenThumbnailStatus(itemTokenContractId, "63f34026-ffef-4dcf-a512-746f3e512378")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(ret)
+}
+
+func TestRetrieveNonFungibleTokenMediaResourceStatus(t *testing.T) {
+
+	ret, err := l.RetrieveNonFungibleTokenMediaResourceStatus(itemTokenContractId, "df6629c7-f1b6-4a82-81b4-6cc3083c2785")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(ret)
+}
+
+func TestRetrieveNonFungibleTokenThumbnailStatus(t *testing.T) {
+	ret, err := l.RetrieveNonFungibleTokenThumbnailStatus(itemTokenContractId, "df6629c7-f1b6-4a82-81b4-6cc3083c2785")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(ret)
+}
+
+func TestUpdateFungibleTokenMediaResources(t *testing.T) {
+	updateList := []*UpdateFungibleList{
+		{
+			TokenType: "10000002",
+		},
+	}
+	ret, err := l.UpdateFungibleTokenMediaResources(itemTokenContractId, updateList)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(ret)
+}
+
+func TestUpdateFungibleTokenThumbnails(t *testing.T) {
+	updateList := []*UpdateFungibleList{
+		{
+			TokenType: "10000002",
+		},
+	}
+	ret, err := l.UpdateFungibleTokenThumbnails(itemTokenContractId, updateList)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(ret)
+}
+
+func TestUpdateNonFungibleTokenMediaResources(t *testing.T) {
+	updateList := []*UpdateList{
+		{
+			TokenType:  "10000001",
+			TokenIndex: "10000003",
+		},
+	}
+	ret, err := l.UpdateNonFungibleTokenMediaResources(itemTokenContractId, updateList)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(ret)
+}
+
+func TestUpdateNonFungibleTokenThumbnails(t *testing.T) {
+	updateList := []*UpdateList{
+		{
+			TokenType:  "10000001",
+			TokenIndex: "10000003",
+		},
+	}
+	ret, err := l.UpdateNonFungibleTokenThumbnails(itemTokenContractId, updateList)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(ret)
+}
