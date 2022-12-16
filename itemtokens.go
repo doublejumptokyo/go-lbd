@@ -357,7 +357,7 @@ func (l LBD) RetrieveTheRootOfNonFungible(contractId, tokenType, tokenIndex stri
 }
 
 type FungibleTokenResponse struct {
-	TokenType    string `json:"contractId"`
+	TokenType    string `json:"tokenType"`
 	Url          string `json:"url"`
 	Status       string `json:"status"`
 	DetailStatus string `json:"detailStatus"`
@@ -385,7 +385,7 @@ func (l LBD) RetrieveTheStatusOfMultipleFungibleTokenIcons(contractId, requestId
 }
 
 type NonFungibleTokenResponse struct {
-	TokenType    string `json:"contractId"`
+	TokenType    string `json:"tokenType"`
 	TokenIndex   string `json:"tokenIndex"`
 	Url          string `json:"url"`
 	Status       string `json:"status"`
