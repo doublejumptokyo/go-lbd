@@ -19,10 +19,10 @@ func NewMeta() *Meta {
 
 func (m *Meta) Set(key, value string) (err error) {
 	if len(key) < 1 && 15 < len(key) {
-		return fmt.Errorf("Invalid key length")
+		return fmt.Errorf("invalid key length")
 	}
 	if len(value) < 1 && 15 < len(value) {
-		return fmt.Errorf("Invalid value length")
+		return fmt.Errorf("invalid value length")
 	}
 	m.data[key] = value
 	return nil
