@@ -469,7 +469,7 @@ func (l LBD) IssueSessionTokenForServiceTokenProxySetting(userId, contractId str
 }
 
 type Transfer struct {
-	TxHasn string `json:"txHash"`
+	TxHash string `json:"txHash"`
 }
 
 func UnmarshalTransfer(data []byte) (*Transfer, error) {

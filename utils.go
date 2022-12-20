@@ -157,7 +157,12 @@ func (l LBD) RetrieveWalletAddressBalanceOfSpecificTypeOfNonFungiblesServiceWall
 	return all, nil
 }
 
+// Deprecated: Use ListWalletAddressBalanceAllServiceTokens
 func (l LBD) ListWalletAddresseBalanceAllServiceTokens(walletAddress string) ([]*RetrieveBalanceServiceTokensResponse, error) {
+	return l.ListWalletAddressBalanceAllServiceTokens(walletAddress)
+}
+
+func (l LBD) ListWalletAddressBalanceAllServiceTokens(walletAddress string) ([]*RetrieveBalanceServiceTokensResponse, error) {
 	all := []*RetrieveBalanceServiceTokensResponse{}
 	pager := &Pager{
 		Page:    1,
@@ -201,8 +206,8 @@ func (l LBD) ListAllFungiblesItemToken(contractId string) ([]*TokenType, error) 
 	return all, nil
 }
 
-func (l LBD) RetrieveAllFungibleHoldersItemToken(contractId, tokenType string) ([]*FungibleHolers, error) {
-	all := []*FungibleHolers{}
+func (l LBD) RetrieveAllFungibleHoldersItemToken(contractId, tokenType string) ([]*FungibleHolders, error) {
+	all := []*FungibleHolders{}
 	pager := &Pager{
 		Page:    1,
 		OrderBy: "asc",

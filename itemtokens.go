@@ -122,13 +122,13 @@ func (l LBD) RetrieveFungibleInformation(contractId, tokenType string) (*Fungibl
 	return ret, json.Unmarshal(resp.ResponseData, ret)
 }
 
-type FungibleHolers struct {
+type FungibleHolders struct {
 	WalletAddress string `json:"walletAddress"`
 	UserID        string `json:"userId"`
 	Amount        string `json:"amount"`
 }
 
-func (l LBD) RetrieveAllFungibleHolders(contractId, tokenType string, pager *Pager) ([]*FungibleHolers, error) {
+func (l LBD) RetrieveAllFungibleHolders(contractId, tokenType string, pager *Pager) ([]*FungibleHolders, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/fungibles/%s/holders", contractId, tokenType)
 
 	r := NewGetRequest(path)
@@ -139,7 +139,7 @@ func (l LBD) RetrieveAllFungibleHolders(contractId, tokenType string, pager *Pag
 		return nil, err
 	}
 
-	ret := []*FungibleHolers{}
+	ret := []*FungibleHolders{}
 	err = json.Unmarshal(resp.ResponseData, &ret)
 	if err != nil {
 		return nil, err
