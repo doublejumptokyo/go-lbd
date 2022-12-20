@@ -11,8 +11,8 @@ var (
 	owner                  = NewWallet(os.Getenv("OWNER_ADDR"), os.Getenv("OWNER_SECRET"))
 	itemTokenContractId    = os.Getenv("ITEMTOKEN_CONTRACT_ID")
 	serviceTokenContractId = os.Getenv("SERVICETOKEN_CONTRACT_ID")
-	tokenType              = "10000001"
 	fungibleTokenType      = "00000001"
+	nonFungibleTokenType   = "10000001"
 	userId                 = os.Getenv("USER_ID")
 	toAddress              = userId
 	sessionToken           = os.Getenv("SESSION")

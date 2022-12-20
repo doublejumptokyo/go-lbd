@@ -363,6 +363,7 @@ type FungibleTokenResponse struct {
 	DetailStatus string `json:"detailStatus"`
 }
 
+// Deprecated: Use RetrieveFungibleTokenMediaResourceStatus or RetrieveFungibleTokenThumbnailsStatus instead.
 func (l LBD) RetrieveTheStatusOfMultipleFungibleTokenIcons(contractId, requestId string) ([]*FungibleTokenResponse, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/fungibles/icon/%s/status", contractId, requestId)
 
@@ -391,6 +392,7 @@ type NonFungibleTokenResponse struct {
 	DetailStatus string `json:"detailStatus"`
 }
 
+// Deprecated: Use RetrieveNonFungibleTokenMediaResourceStatus or RetrieveNonFungibleTokenThumbnailsStatus instead.
 func (l LBD) RetrieveTheStatusOfMultipleNonFungibleTokenIcons(contractId, requestId string) ([]*NonFungibleTokenResponse, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/icon/%s/status", contractId, requestId)
 
@@ -552,6 +554,10 @@ type UpdateMultipleFungibleTokenIconsRequest struct {
 	*Request
 	UpdateList []*UpdateFungibleList `json:"updateList"`
 }
+type UpdateMultipleFungibleTokenUpdateListRequest struct {
+	*Request
+	UpdateList []*UpdateFungibleList `json:"updateList"`
+}
 
 type UpdateList struct {
 	TokenType  string `json:"tokenType"`
@@ -563,6 +569,21 @@ type UpdateFungibleList struct {
 }
 
 func (r UpdateMultipleFungibleTokenIconsRequest) Encode() string {
+	base := r.Request.Encode()
+	types := make([]string, len(r.UpdateList))
+
+	for i, m := range r.UpdateList {
+		types[i] = m.TokenType
+	}
+	updateList := fmt.Sprintf("updateList.tokenType=%s",
+		strings.Join(types, ","),
+	)
+
+	ret := fmt.Sprintf("%s?%s", base, updateList)
+	return ret
+}
+
+func (r UpdateMultipleFungibleTokenUpdateListRequest) Encode() string {
 	base := r.Request.Encode()
 	types := make([]string, len(r.UpdateList))
 
@@ -595,7 +616,30 @@ func (r UpdateMultipleNonFungibleTokenIconsRequest) Encode() string {
 	return ret
 }
 
+func (r UpdateMultipleNonFungibleTokenUpdateListRequest) Encode() string {
+	base := r.Request.Encode()
+	types := make([]string, len(r.UpdateList))
+	indexes := make([]string, len(r.UpdateList))
+
+	for i, m := range r.UpdateList {
+		types[i] = m.TokenType
+		indexes[i] = m.TokenIndex
+	}
+	updateList := fmt.Sprintf("updateList.tokenIndex=%s&updateList.tokenType=%s",
+		strings.Join(indexes, ","),
+		strings.Join(types, ","),
+	)
+
+	ret := fmt.Sprintf("%s?%s", base, updateList)
+	return ret
+}
+
 type UpdateMultipleNonFungibleTokenIconsRequest struct {
+	*Request
+	UpdateList []*UpdateList `json:"updateList"`
+}
+
+type UpdateMultipleNonFungibleTokenUpdateListRequest struct {
 	*Request
 	UpdateList []*UpdateList `json:"updateList"`
 }
@@ -604,6 +648,15 @@ type UpdateMultipleTokenIconsResponse struct {
 	RequestId string `json:"requestId"`
 }
 
+type UpdateMediaResourcesResponse struct {
+	RequestId string `json:"requestId"`
+}
+
+type UpdateThumbnailsResponse struct {
+	RequestId string `json:"requestId"`
+}
+
+// Deprecated: Use UpdateNonFungibleTokenThumbnails or UpdateNonFungibleTokenMediaResources or  instead.
 func (l *LBD) UpdateMultipleNonFungibleTokenIcons(contactId string, updateList []*UpdateList) (*UpdateMultipleTokenIconsResponse, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/icon", contactId)
 
@@ -621,6 +674,7 @@ func (l *LBD) UpdateMultipleNonFungibleTokenIcons(contactId string, updateList [
 	return ret, json.Unmarshal(resp.ResponseData, &ret)
 }
 
+// Deprecated: Use UpdateFungibleTokenThumbnails or UpdateFungibleTokenMediaResources instead.
 func (l *LBD) UpdateMultipleFungibleTokenIcons(contactId string, updateList []*UpdateFungibleList) (*UpdateMultipleTokenIconsResponse, error) {
 	path := fmt.Sprintf("/v1/item-tokens/%s/fungibles/icon", contactId)
 
@@ -991,4 +1045,160 @@ func (l *LBD) BurnNonFungible(contractId, tokenType, tokenIndex, from string) (*
 		return nil, err
 	}
 	return UnmarshalTransaction(resp.ResponseData)
+}
+
+// Get media resource status for multiple fungible tokens
+func (l LBD) RetrieveFungibleTokenMediaResourceStatus(contractId, requestId string) ([]*FungibleTokenResponse, error) {
+	path := fmt.Sprintf("/v1/item-tokens/%s/fungibles/media-resources/%s/status", contractId, requestId)
+
+	r := NewGetRequest(path)
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+
+	ret := []*FungibleTokenResponse{}
+
+	err = json.Unmarshal(resp.ResponseData, &ret)
+	if err != nil {
+		return nil, err
+	}
+
+	return ret, nil
+}
+
+// Get thumbnail status of multiple fungible tokens
+func (l LBD) RetrieveFungibleTokenThumbnailStatus(contractId, requestId string) ([]*FungibleTokenResponse, error) {
+	path := fmt.Sprintf("/v1/item-tokens/%s/fungibles/thumbnails/%s/status", contractId, requestId)
+
+	r := NewGetRequest(path)
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+
+	ret := []*FungibleTokenResponse{}
+
+	err = json.Unmarshal(resp.ResponseData, &ret)
+	if err != nil {
+		return nil, err
+	}
+
+	return ret, nil
+}
+
+// Get media resource status for multiple non-fungible tokens
+func (l LBD) RetrieveNonFungibleTokenMediaResourceStatus(contractId, requestId string) ([]*NonFungibleTokenResponse, error) {
+	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/media-resources/%s/status", contractId, requestId)
+
+	r := NewGetRequest(path)
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+
+	ret := []*NonFungibleTokenResponse{}
+
+	err = json.Unmarshal(resp.ResponseData, &ret)
+	if err != nil {
+		return nil, err
+	}
+
+	return ret, nil
+}
+
+// Get thumbnail status of multiple non-fungible tokens
+func (l LBD) RetrieveNonFungibleTokenThumbnailStatus(contractId, requestId string) ([]*NonFungibleTokenResponse, error) {
+	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/thumbnails/%s/status", contractId, requestId)
+
+	r := NewGetRequest(path)
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+
+	ret := []*NonFungibleTokenResponse{}
+
+	err = json.Unmarshal(resp.ResponseData, &ret)
+	if err != nil {
+		return nil, err
+	}
+
+	return ret, nil
+}
+
+// Update media resources for multiple fungible tokens
+func (l *LBD) UpdateFungibleTokenMediaResources(contactId string, updateList []*UpdateFungibleList) (*UpdateMediaResourcesResponse, error) {
+	path := fmt.Sprintf("/v1/item-tokens/%s/fungibles/media-resources", contactId)
+
+	r := UpdateMultipleFungibleTokenUpdateListRequest{
+		Request:    NewPutRequest(path),
+		UpdateList: updateList,
+	}
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+
+	ret := new(UpdateMediaResourcesResponse)
+	return ret, json.Unmarshal(resp.ResponseData, &ret)
+}
+
+// Update thumbnails for multiple fungible tokens
+func (l *LBD) UpdateFungibleTokenThumbnails(contactId string, updateList []*UpdateFungibleList) (*UpdateThumbnailsResponse, error) {
+	path := fmt.Sprintf("/v1/item-tokens/%s/fungibles/thumbnails", contactId)
+
+	r := UpdateMultipleFungibleTokenUpdateListRequest{
+		Request:    NewPutRequest(path),
+		UpdateList: updateList,
+	}
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+
+	ret := new(UpdateThumbnailsResponse)
+	return ret, json.Unmarshal(resp.ResponseData, &ret)
+}
+
+// Update media resources for multiple non-fungible tokens
+func (l *LBD) UpdateNonFungibleTokenMediaResources(contactId string, updateList []*UpdateList) (*UpdateMediaResourcesResponse, error) {
+	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/media-resources", contactId)
+
+	r := UpdateMultipleNonFungibleTokenUpdateListRequest{
+		Request:    NewPutRequest(path),
+		UpdateList: updateList,
+	}
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+
+	ret := new(UpdateMediaResourcesResponse)
+	return ret, json.Unmarshal(resp.ResponseData, &ret)
+}
+
+// Update thumbnails for multiple non-fungible tokens
+func (l *LBD) UpdateNonFungibleTokenThumbnails(contactId string, updateList []*UpdateList) (*UpdateThumbnailsResponse, error) {
+	path := fmt.Sprintf("/v1/item-tokens/%s/non-fungibles/thumbnails", contactId)
+
+	r := UpdateMultipleNonFungibleTokenUpdateListRequest{
+		Request:    NewPutRequest(path),
+		UpdateList: updateList,
+	}
+
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+
+	ret := new(UpdateThumbnailsResponse)
+	return ret, json.Unmarshal(resp.ResponseData, &ret)
 }

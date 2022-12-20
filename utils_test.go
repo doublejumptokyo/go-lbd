@@ -27,7 +27,7 @@ func TestRetrieveUserHoldersFungibles(t *testing.T) {
 }
 
 func TestListBalanceOfSpecificTypeOfNonFungiblesUserWallet(t *testing.T) {
-	ret, err := l.ListBalanceOfSpecificTypeOfNonFungiblesUserWallet(userId, itemTokenContractId, tokenType)
+	ret, err := l.ListBalanceOfSpecificTypeOfNonFungiblesUserWallet(userId, itemTokenContractId, nonFungibleTokenType)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -43,7 +43,7 @@ func TestRetrieveWalletAddressBalanceOfAllNonFungiblesServiceWallet(t *testing.T
 }
 
 func TestRetrieveWalletAddressBalanceOfSpecificTypeOfNonFungiblesServiceWallet(t *testing.T) {
-	ret, err := l.RetrieveWalletAddressBalanceOfSpecificTypeOfNonFungiblesServiceWallet(owner.Address, itemTokenContractId, tokenType)
+	ret, err := l.RetrieveWalletAddressBalanceOfSpecificTypeOfNonFungiblesServiceWallet(owner.Address, itemTokenContractId, nonFungibleTokenType)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -83,7 +83,7 @@ func TestRetrieveAllFungibleHoldersItemToken(t *testing.T) {
 }
 
 func TestRetrieveHolderOfSpecificNonFungibleItemToken(t *testing.T) {
-	ret, err := l.RetrieveHolderOfSpecificNonFungibleItemToken(itemTokenContractId, tokenType)
+	ret, err := l.RetrieveHolderOfSpecificNonFungibleItemToken(itemTokenContractId, nonFungibleTokenType)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -91,7 +91,7 @@ func TestRetrieveHolderOfSpecificNonFungibleItemToken(t *testing.T) {
 }
 
 func TestListTheChildrenOfNonFungibleItemToken(t *testing.T) {
-	ret, err := l.ListTheChildrenOfNonFungibleItemToken(itemTokenContractId, tokenType, "00000001")
+	ret, err := l.ListTheChildrenOfNonFungibleItemToken(itemTokenContractId, nonFungibleTokenType, "00000001")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -107,7 +107,7 @@ func TestListAllNonFungiblesItemToken(t *testing.T) {
 }
 
 func TestUpdateMultipleNonFungibleTokenIconsCache(t *testing.T) {
-	err := l.UpdateMultipleNonFungibleTokenIconsCache([]string{tokenType + "00000001"}, itemTokenContractId)
+	err := l.UpdateMultipleNonFungibleTokenIconsCache([]string{nonFungibleTokenType + "00000001"}, itemTokenContractId)
 	if err != nil {
 		t.Fatal(err)
 	}

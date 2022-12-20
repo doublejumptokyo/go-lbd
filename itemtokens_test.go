@@ -16,7 +16,7 @@ func TestListAllFungibles(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Log(*ret[0])
+	t.Log(ret)
 }
 
 func TestRetrieveFungibleInformation(t *testing.T) {
@@ -39,7 +39,7 @@ func TestRetrieveAllFungibleHolders(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Log(*ret[0])
+	t.Log(ret)
 }
 
 func TestListAllNonFungibles(t *testing.T) {
@@ -53,7 +53,7 @@ func TestListAllNonFungibles(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Log(*ret[1])
+	t.Log(ret)
 }
 
 func TestCreateNonFungible(t *testing.T) {
@@ -67,7 +67,7 @@ func TestCreateNonFungible(t *testing.T) {
 
 func TestRetrieveNonFungibleInformation(t *testing.T) {
 	onlyTxMode(t)
-	ret, err := l.RetrieveNonFungibleInformation(itemTokenContractId, tokenType, "00000001")
+	ret, err := l.RetrieveNonFungibleInformation(itemTokenContractId, nonFungibleTokenType, "00000001")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -76,7 +76,7 @@ func TestRetrieveNonFungibleInformation(t *testing.T) {
 
 func TestMintNonFungible(t *testing.T) {
 	onlyTxMode(t)
-	ret, err := l.MintNonFungible(itemTokenContractId, tokenType, "Nobnyaga", "uwawa", toAddress)
+	ret, err := l.MintNonFungible(itemTokenContractId, nonFungibleTokenType, "Nobnyaga", "uwawa", toAddress)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -111,7 +111,7 @@ func TestUpdateNonFungibleInformation(t *testing.T) {
 
 func TestRetrieveTheHolderOfSpecificNonFungible(t *testing.T) {
 	onlyTxMode(t)
-	ret, err := l.RetrieveTheHolderOfSpecificNonFungible(itemTokenContractId, tokenType, "00000001")
+	ret, err := l.RetrieveTheHolderOfSpecificNonFungible(itemTokenContractId, nonFungibleTokenType, "00000001")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -125,41 +125,25 @@ func TestListTheChildrenOfNonFungible(t *testing.T) {
 		OrderBy: "asc",
 		Limit:   DefaultLimit,
 	}
-	ret, err := l.ListTheChildrenOfNonFungible(itemTokenContractId, tokenType, "00000001", pager)
+	ret, err := l.ListTheChildrenOfNonFungible(itemTokenContractId, nonFungibleTokenType, "00000001", pager)
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Log(*ret[0])
+	t.Log(ret)
 }
 
 func TestRetrieveTheParentOfNonFungible(t *testing.T) {
 	onlyTxMode(t)
-	ret, err := l.RetrieveTheParentOfNonFungible(itemTokenContractId, tokenType, "00000001")
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Log(ret)
-}
-func TestRetrieveTheRootOfNonFungible(t *testing.T) {
-	onlyTxMode(t)
-	ret, err := l.RetrieveTheRootOfNonFungible(itemTokenContractId, tokenType, "00000001")
+	ret, err := l.RetrieveTheParentOfNonFungible(itemTokenContractId, nonFungibleTokenType, "00000001")
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Log(ret)
 }
 
-func TestRetrieveTheStatusOfMultipleFungibleTokenIcons(t *testing.T) {
+func TestRetrieveTheRootOfNonFungible(t *testing.T) {
 	onlyTxMode(t)
-	ret, err := l.RetrieveTheStatusOfMultipleFungibleTokenIcons(itemTokenContractId, "63f34026-ffef-4dcf-a512-746f3e512378")
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Log(ret)
-}
-func TestRetrieveTheStatusOfMultipleNonFungibleTokenIcons(t *testing.T) {
-	onlyTxMode(t)
-	ret, err := l.RetrieveTheStatusOfMultipleNonFungibleTokenIcons(itemTokenContractId, "df6629c7-f1b6-4a82-81b4-6cc3083c2785")
+	ret, err := l.RetrieveTheRootOfNonFungible(itemTokenContractId, nonFungibleTokenType, "00000001")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -206,7 +190,7 @@ func TestUpdateFungibleInformation(t *testing.T) {
 
 func TestAttachNonFungibleAnother(t *testing.T) {
 	onlyTxMode(t)
-	ret, err := l.AttachNonFungibleAnother(itemTokenContractId, tokenType, "00000001", " 1000000600000001", userId)
+	ret, err := l.AttachNonFungibleAnother(itemTokenContractId, nonFungibleTokenType, "00000001", " 1000000600000001", userId)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -215,7 +199,7 @@ func TestAttachNonFungibleAnother(t *testing.T) {
 
 func TestDetachNonFungibleParent(t *testing.T) {
 	onlyTxMode(t)
-	ret, err := l.DetachNonFungibleParent(itemTokenContractId, tokenType, "00000001", userId)
+	ret, err := l.DetachNonFungibleParent(itemTokenContractId, nonFungibleTokenType, "00000001", userId)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -242,7 +226,7 @@ func TestMintFungible(t *testing.T) {
 
 func TestBurnFungible(t *testing.T) {
 	onlyTxMode(t)
-	ret, err := l.BurnFungible(itemTokenContractId, tokenType, toAddress, big.NewInt(1000))
+	ret, err := l.BurnFungible(itemTokenContractId, fungibleTokenType, toAddress, big.NewInt(1000))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -287,7 +271,7 @@ func TestMintMultipleNonFungible(t *testing.T) {
 	onlyTxMode(t)
 	mintList := []*MintList{
 		{
-			TokenType: tokenType,
+			TokenType: nonFungibleTokenType,
 			Name:      name,
 			Meta:      meta,
 		},
@@ -302,7 +286,86 @@ func TestMintMultipleNonFungible(t *testing.T) {
 
 func TestBurnNonFungible(t *testing.T) {
 	onlyTxMode(t)
-	ret, err := l.BurnNonFungible(itemTokenContractId, tokenType, "00000001", toAddress)
+	ret, err := l.BurnNonFungible(itemTokenContractId, nonFungibleTokenType, "00000001", toAddress)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(ret)
+}
+
+func TestRetrieveFungibleTokenMediaResourceStatus(t *testing.T) {
+	onlyTxMode(t)
+
+	updateList := []*UpdateFungibleList{{TokenType: "00000002"}}
+	updateRet, _ := l.UpdateFungibleTokenMediaResources(itemTokenContractId, updateList)
+
+	ret, err := l.RetrieveFungibleTokenMediaResourceStatus(itemTokenContractId, updateRet.RequestId)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(ret)
+}
+
+func TestRetrieveFungibleTokenThumbnailStatus(t *testing.T) {
+	updateList := []*UpdateFungibleList{{TokenType: "00000002"}}
+	updateRet, _ := l.UpdateFungibleTokenThumbnails(itemTokenContractId, updateList)
+	ret, err := l.RetrieveFungibleTokenThumbnailStatus(itemTokenContractId, updateRet.RequestId)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(ret)
+}
+
+func TestRetrieveNonFungibleTokenMediaResourceStatus(t *testing.T) {
+	updateList := []*UpdateList{{TokenType: "10000001", TokenIndex: "00000001"}}
+	updateRet, _ := l.UpdateNonFungibleTokenMediaResources(itemTokenContractId, updateList)
+	ret, err := l.RetrieveNonFungibleTokenMediaResourceStatus(itemTokenContractId, updateRet.RequestId)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(ret)
+}
+
+func TestRetrieveNonFungibleTokenThumbnailStatus(t *testing.T) {
+	updateList := []*UpdateList{{TokenType: "10000001", TokenIndex: "00000001"}}
+	updateRet, _ := l.UpdateNonFungibleTokenThumbnails(itemTokenContractId, updateList)
+	ret, err := l.RetrieveNonFungibleTokenThumbnailStatus(itemTokenContractId, updateRet.RequestId)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(ret)
+}
+
+func TestUpdateFungibleTokenMediaResources(t *testing.T) {
+	updateList := []*UpdateFungibleList{{TokenType: fungibleTokenType}}
+	ret, err := l.UpdateFungibleTokenMediaResources(itemTokenContractId, updateList)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(ret)
+}
+
+func TestUpdateFungibleTokenThumbnails(t *testing.T) {
+	updateList := []*UpdateFungibleList{{TokenType: fungibleTokenType}}
+	ret, err := l.UpdateFungibleTokenThumbnails(itemTokenContractId, updateList)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(ret)
+}
+
+func TestUpdateNonFungibleTokenMediaResources(t *testing.T) {
+	updateList := []*UpdateList{{TokenType: nonFungibleTokenType, TokenIndex: "00000001"}}
+	ret, err := l.UpdateNonFungibleTokenMediaResources(itemTokenContractId, updateList)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(ret)
+}
+
+func TestUpdateNonFungibleTokenThumbnails(t *testing.T) {
+	updateList := []*UpdateList{{TokenType: nonFungibleTokenType, TokenIndex: "00000001"}}
+	ret, err := l.UpdateNonFungibleTokenThumbnails(itemTokenContractId, updateList)
 	if err != nil {
 		t.Fatal(err)
 	}

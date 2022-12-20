@@ -36,7 +36,7 @@ func TestRetrieveServiceWalletTransactionHistory(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Log(len(ret))
-	t.Log(*ret[0])
+	t.Log(ret)
 }
 
 func TestRetrieveBaseCoinBalance(t *testing.T) {
@@ -58,7 +58,7 @@ func TestRetrieveBalanceAllServiceTokens(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Log(len(ret))
-	t.Log(*ret[0])
+	t.Log(ret)
 }
 
 func TestRetrieveBalanceSpecificServiceTokenWallet(t *testing.T) {
@@ -80,11 +80,11 @@ func TestRetrieveBalanceAllFungibles(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Log(len(ret))
-	t.Log(*ret[0])
+	t.Log(ret)
 }
 
 func TestRetrieveBalanceSpecificFungible(t *testing.T) {
-	ret, err := l.RetrieveBalanceSpecificFungible(owner.Address, itemTokenContractId, tokenType)
+	ret, err := l.RetrieveBalanceSpecificFungible(owner.Address, itemTokenContractId, fungibleTokenType)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -92,7 +92,7 @@ func TestRetrieveBalanceSpecificFungible(t *testing.T) {
 }
 
 func TestRetrieveBalanceSpecificNonFungible(t *testing.T) {
-	ret, err := l.RetrieveBalanceSpecificNonFungible(owner.Address, itemTokenContractId, tokenType, "00000001")
+	ret, err := l.RetrieveBalanceSpecificNonFungible(owner.Address, itemTokenContractId, nonFungibleTokenType, "00000001")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -109,7 +109,7 @@ func TestTransferServiceTokens(t *testing.T) {
 }
 
 func TestTransferFungible(t *testing.T) {
-	ret, err := l.TransferFungible(owner, serviceTokenContractId, toAddress, tokenType, big.NewInt(1000))
+	ret, err := l.TransferFungible(owner, serviceTokenContractId, toAddress, fungibleTokenType, big.NewInt(1000))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -120,10 +120,10 @@ func TestBatchTransferNonFungible(t *testing.T) {
 
 	transferList := []*TransferList{
 		{
-			TokenId: tokenType + "00000001",
+			TokenId: nonFungibleTokenType + "00000001",
 		},
 		{
-			TokenId: tokenType + "00000002",
+			TokenId: nonFungibleTokenType + "00000002",
 		},
 	}
 	ret, err := l.BatchTransferNonFungible(owner.Address, itemTokenContractId, toAddress, transferList)

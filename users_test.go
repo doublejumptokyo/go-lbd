@@ -19,7 +19,7 @@ func TestRetrieveUserWalletTransactionHistory(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Log(len(ret))
-	t.Log(*ret[0])
+	t.Log(ret)
 }
 
 func TestIssueSessionTokenForBaseCoinTransfer(t *testing.T) {
@@ -33,7 +33,7 @@ func TestIssueSessionTokenForBaseCoinTransfer(t *testing.T) {
 
 func TestFuncTransferNonFungibleUserWallet(t *testing.T) {
 	onlyTxMode(t)
-	ret, err := l.TransferNonFungibleUserWallet(itemTokenContractId, userId, "tlink10ps670a0x6ma5knthjjswgw89d44vmz6xm3umr", tokenType, "00000009")
+	ret, err := l.TransferNonFungibleUserWallet(itemTokenContractId, userId, "tlink10ps670a0x6ma5knthjjswgw89d44vmz6xm3umr", nonFungibleTokenType, "00000009")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -131,7 +131,7 @@ func TestRetrieveBalanceOfNonFungiblesWithTokenTypeUserWallet(t *testing.T) {
 }
 
 func TestRetrieveBalanceOfSpecificNonFungibleUserWallet(t *testing.T) {
-	ret, err := l.RetrieveBalanceOfSpecificNonFungibleUserWallet(userId, itemTokenContractId, tokenType, "00000001")
+	ret, err := l.RetrieveBalanceOfSpecificNonFungibleUserWallet(userId, itemTokenContractId, nonFungibleTokenType, "00000001")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -181,7 +181,7 @@ func TestTransferDelegatedServiceTokenUserWallet(t *testing.T) {
 }
 
 func TestTransferDelegatedFungibleUserWallet(t *testing.T) {
-	ret, err := l.TransferDelegatedFungibleUserWallet(userId, itemTokenContractId, tokenType, owner.Address, big.NewInt(1000))
+	ret, err := l.TransferDelegatedFungibleUserWallet(userId, itemTokenContractId, fungibleTokenType, owner.Address, big.NewInt(1000))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -189,7 +189,7 @@ func TestTransferDelegatedFungibleUserWallet(t *testing.T) {
 }
 
 func TestTransferDelegatedNonFungible(t *testing.T) {
-	ret, err := l.TransferDelegatedNonFungible(userId, itemTokenContractId, tokenType, "00000001", owner.Address)
+	ret, err := l.TransferDelegatedNonFungible(userId, itemTokenContractId, nonFungibleTokenType, "00000001", owner.Address)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -197,7 +197,7 @@ func TestTransferDelegatedNonFungible(t *testing.T) {
 }
 
 func TestBatchTransferDelegatedNonFungiblesUserWallet(t *testing.T) {
-	ret, err := l.BatchTransferDelegatedNonFungiblesUserWallet(userId, itemTokenContractId, owner.Address, []TransferList{{TokenId: tokenType + "00000001"}, {TokenId: tokenType + "00000002"}})
+	ret, err := l.BatchTransferDelegatedNonFungiblesUserWallet(userId, itemTokenContractId, owner.Address, []TransferList{{TokenId: nonFungibleTokenType + "00000001"}, {TokenId: nonFungibleTokenType + "00000002"}})
 	if err != nil {
 		t.Fatal(err)
 	}
