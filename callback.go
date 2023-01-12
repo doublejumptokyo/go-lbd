@@ -1,5 +1,6 @@
 package lbd
 
+// Deprecated: Use ConstructRawTransactionV2
 func ConstructRawTransaction(raw []byte) (*Transaction, error) {
 	ret, err := UnmarshalTransaction(raw)
 	if err != nil {

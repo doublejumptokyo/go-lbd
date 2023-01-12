@@ -85,6 +85,7 @@ type PubKey struct {
 	Value string `json:"value"`
 }
 
+// Deprecated: Use RetrieveTransactionInformationV2
 func (l LBD) RetrieveTransactionInformation(txHash string) (*Transaction, error) {
 	r := NewGetRequest("/v1/transactions/" + txHash)
 	resp, err := l.Do(r, true)
