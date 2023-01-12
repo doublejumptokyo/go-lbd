@@ -13,3 +13,15 @@ func ConstructRawTransaction(raw []byte) (*Transaction, error) {
 
 	return ret, nil
 }
+
+func ConstructRawTransactionV2(raw []byte) (*TransactionV2, error) {
+	ret, err := UnmarshalTransactionV2(raw)
+	if err != nil {
+		return nil, err
+	}
+	err = ret.Check()
+	if err != nil {
+		return nil, err
+	}
+	return ret, nil
+}
