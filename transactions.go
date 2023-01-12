@@ -3,6 +3,7 @@ package lbd
 import (
 	"encoding/json"
 	"fmt"
+	"path"
 	"strings"
 )
 
@@ -95,4 +96,60 @@ func (l LBD) RetrieveTransactionInformation(txHash string) (*Transaction, error)
 
 func (l LBD) GetExplorerURL(tx *Transaction) string {
 	return fmt.Sprintf("https://explorer.blockchain.line.me/%s/transaction/%s", strings.ToLower(string(l.Network)), tx.Txhash)
+}
+
+type TransactionV2SummaryResult struct {
+	Code      int64  `json:"code"`
+	CodeSpace string `json:"codeSpace"`
+	Status    string `json:"status"`
+}
+
+type TransactionV2Summary struct {
+	Height    int64                       `json:"height"`
+	TxIndex   int64                       `json:"txIndex"`
+	TxHash    string                      `json:"txHash"`
+	Timestamp int64                       `json:"timestamp"`
+	Signer    []string                    `json:"signer"`
+	Result    *TransactionV2SummaryResult `json:"result"`
+}
+
+type TransactionV2Message struct {
+	MsgIndex    int64           `json:"msgIndex"`
+	RequestType string          `json:"resultType"`
+	Details     json.RawMessage `json:"details"`
+}
+
+type TransactionV2 struct {
+	Summary  *TransactionV2Summary   `json:"summary"`
+	Messages []*TransactionV2Message `json:"messages"`
+	Events   []json.RawMessage       `json:"events"`
+}
+
+func (t *TransactionV2) Check() error {
+	var (
+		code      int64 = -1
+		codespace string
+	)
+	if t.Summary != nil && t.Summary.Result != nil {
+		code = t.Summary.Result.Code
+		codespace = t.Summary.Result.CodeSpace
+	}
+	if code == 0 {
+		return nil
+	}
+	return fmt.Errorf("Transaction failure %s %d", codespace, code)
+}
+
+func UnmarshalTransactionV2(data []byte) (*TransactionV2, error) {
+	r := new(TransactionV2)
+	return r, json.Unmarshal(data, r)
+}
+
+func (l LBD) RetrieveTransactionInformationV2(txHash string) (*TransactionV2, error) {
+	r := NewGetRequest(path.Join("/v2/transactions", txHash))
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+	return UnmarshalTransactionV2(resp.ResponseData)
 }
