@@ -3,7 +3,6 @@ package lbd
 import (
 	"encoding/json"
 	"fmt"
-	"path"
 	"strings"
 )
 
@@ -147,7 +146,7 @@ func UnmarshalTransactionV2(data []byte) (*TransactionV2, error) {
 }
 
 func (l LBD) RetrieveTransactionInformationV2(txHash string) (*TransactionV2, error) {
-	r := NewGetRequest(path.Join("/v2/transactions", txHash))
+	r := NewGetRequest("/v2/transactions/" + txHash)
 	resp, err := l.Do(r, true)
 	if err != nil {
 		return nil, err
