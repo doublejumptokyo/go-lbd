@@ -308,7 +308,10 @@ func TestRetrieveFungibleTokenMediaResourceStatus(t *testing.T) {
 
 func TestRetrieveFungibleTokenThumbnailStatus(t *testing.T) {
 	updateList := []*UpdateFungibleList{{TokenType: "00000002"}}
-	updateRet, _ := l.UpdateFungibleTokenThumbnails(itemTokenContractId, updateList)
+	updateRet, err := l.UpdateFungibleTokenThumbnails(itemTokenContractId, updateList)
+	if err != nil {
+		t.Fatal(err)
+	}
 	ret, err := l.RetrieveFungibleTokenThumbnailStatus(itemTokenContractId, updateRet.RequestId)
 	if err != nil {
 		t.Fatal(err)
@@ -318,7 +321,10 @@ func TestRetrieveFungibleTokenThumbnailStatus(t *testing.T) {
 
 func TestRetrieveNonFungibleTokenMediaResourceStatus(t *testing.T) {
 	updateList := []*UpdateList{{TokenType: "10000001", TokenIndex: "00000001"}}
-	updateRet, _ := l.UpdateNonFungibleTokenMediaResources(itemTokenContractId, updateList)
+	updateRet, err := l.UpdateNonFungibleTokenMediaResources(itemTokenContractId, updateList)
+	if err != nil {
+		t.Fatal(err)
+	}
 	ret, err := l.RetrieveNonFungibleTokenMediaResourceStatus(itemTokenContractId, updateRet.RequestId)
 	if err != nil {
 		t.Fatal(err)
@@ -328,7 +334,10 @@ func TestRetrieveNonFungibleTokenMediaResourceStatus(t *testing.T) {
 
 func TestRetrieveNonFungibleTokenThumbnailStatus(t *testing.T) {
 	updateList := []*UpdateList{{TokenType: "10000001", TokenIndex: "00000001"}}
-	updateRet, _ := l.UpdateNonFungibleTokenThumbnails(itemTokenContractId, updateList)
+	updateRet, err := l.UpdateNonFungibleTokenThumbnails(itemTokenContractId, updateList)
+	if err != nil {
+		t.Fatal(err)
+	}
 	ret, err := l.RetrieveNonFungibleTokenThumbnailStatus(itemTokenContractId, updateRet.RequestId)
 	if err != nil {
 		t.Fatal(err)
