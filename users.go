@@ -154,18 +154,19 @@ type IssueSessionTokenForProxySettingRequest struct {
 	OwnerAddress string      `json:"ownerAddress"`
 	OwnerSecret  string      `json:"ownerSecret"`
 	RequestType  RequestType `json:"-"`
-	// LandingUri    string      `json:"landingUri,omitempty"`
+	LandingUri   string      `json:"landingUri,omitempty"`
 }
 
 func (r IssueSessionTokenForProxySettingRequest) Encode() string {
 	base := r.Request.Encode()
-	return fmt.Sprintf("%s&ownerAddress=%s&ownerSecret=%s", base, r.OwnerAddress, r.OwnerSecret)
+	return fmt.Sprintf("%s&landingUri=%s&ownerAddress=%s&ownerSecret=%s", base, r.LandingUri, r.OwnerAddress, r.OwnerSecret)
 }
 
-func (l *LBD) IssueSessionTokenForProxySetting(userId, contractId string, requestType RequestType) (*SessionToken, error) {
+func (l *LBD) IssueSessionTokenForProxySetting(userId, contractId , landingUri string, requestType RequestType) (*SessionToken, error) {
 	path := fmt.Sprintf("/v1/users/%s/item-tokens/%s/request-proxy?requestType=%s", userId, contractId, requestType)
 	r := &IssueSessionTokenForProxySettingRequest{
 		Request:      NewPostRequest(path),
+		LandingUri:   landingUri,
 		OwnerAddress: l.Owner.Address,
 		OwnerSecret:  l.Owner.Secret,
 	}
@@ -625,4 +626,20 @@ func (l LBD) BatchTransferDelegatedNonFungiblesUserWallet(userId, contractId, to
 		return nil, err
 	}
 	return UnmarshalTransfer(resp.ResponseData)
+}
+
+type SessionTokenStatusForItemTokenProxySetting struct {
+	IsApproved bool `json:"isApproved"`
+}
+
+func (l LBD) RetrieveSessionTokenStatusForItemTokenProxySetting(userId, contractId string) (*SessionTokenStatusForItemTokenProxySetting, error) {
+	path := fmt.Sprintf("/v1/users/%s/item-tokens/%s/proxy", userId, contractId)
+
+	r := NewGetRequest(path)
+	resp, err := l.Do(r, true)
+	if err != nil {
+		return nil, err
+	}
+	ret := new(SessionTokenStatusForItemTokenProxySetting)
+	return ret, json.Unmarshal(resp.ResponseData, ret)
 }
