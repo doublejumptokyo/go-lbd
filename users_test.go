@@ -42,7 +42,7 @@ func TestFuncTransferNonFungibleUserWallet(t *testing.T) {
 
 func TestIssueSessionTokenForProxySetting(t *testing.T) {
 	onlyTxMode(t)
-	ret, err := l.IssueSessionTokenForProxySetting(userId, itemTokenContractId, RequestTypeAOA)
+	ret, err := l.IssueSessionTokenForProxySetting(userId, itemTokenContractId, "https://my.service.landing/home", RequestTypeAOA)
 	if err != nil {
 		t.Fatal(err)
 	}
